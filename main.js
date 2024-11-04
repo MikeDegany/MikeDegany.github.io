@@ -7,6 +7,7 @@ const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerH
 console.log("Camera created");
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setClearColor(0x202020, 1); // Dark gray background
 document.getElementById('container').appendChild(renderer.domElement);
 
 // Orbit controls for navigation
