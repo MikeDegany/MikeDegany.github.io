@@ -23,10 +23,10 @@ export const content: ProjectContent = {
   ),
   images: ["/MultiTurtlebot.png"],
   videos: [
-    {
-      // url: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-      title: "Multi-Robot Mapping Demonstration Video Coming Soon!",
-    },
+    // {
+    //   // url: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    //   title: "Multi-Robot Mapping Demonstration Video Coming Soon!",
+    // },
   ],
 }
 
