@@ -47,7 +47,7 @@ export function Hero() {
                       transform: "perspective(500px) rotateX(3deg)",
                     }}
                   >
-                    Computer Science and Engineering
+                    Computer Science and Engineering PhD Candidate
                   </p>
                   <p
                     className="text-xl font-semibold transition-transform duration-300"
@@ -57,7 +57,7 @@ export function Hero() {
                       transform: "perspective(500px) rotateX(3deg)",
                     }}
                   >
-                    Robotics Engineer
+                    Mechatronics Engineer | Robotics Engineer
                   </p>
                   <p
                     className="text-xl font-semibold transition-transform duration-300"
@@ -67,8 +67,19 @@ export function Hero() {
                       transform: "perspective(500px) rotateX(3deg)",
                     }}
                   >
-                    Ph.D. Candidate
+                    Autonomous Vehicles | SLAM & 3D Perception
                   </p>
+                  <p
+                    className="text-xl font-semibold transition-transform duration-300"
+                    style={{
+                      textShadow:
+                        "0 1px 0 rgba(0,0,0,0.25), 0 4px 10px rgba(0,0,0,0.35)",
+                      transform: "perspective(500px) rotateX(3deg)",
+                    }}
+                  >
+                    Modern C++ | Python
+                  </p>
+
                 </div>
               </div>
 
