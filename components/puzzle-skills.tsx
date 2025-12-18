@@ -139,7 +139,9 @@ export function PuzzleSkills() {
   }
 
   return (
-    <section id="puzzle-skills" className="py-20 bg-gradient-to-b from-gray-50 to-white dark:from-background dark:to-gray-900">
+    // <section id="puzzle-skills" className="py-20 bg-gradient-to-b from-gray-50 to-white dark:from-background dark:to-gray-900">
+    <section id="skills" className="py-20 bg-gradient-to-b from-gray-50 to-white dark:from-background dark:to-gray-900">
+
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold text-gray-900 dark:text-foreground mb-2">TECHNICAL SKILLS</h2>
