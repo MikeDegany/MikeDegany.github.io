@@ -2,54 +2,64 @@
 
 import { useState, useEffect, useRef } from "react"
 
-const educationItems = [
+// --- Configuration ---
+// Increased height to provide headroom for bubbles
+const SVG_WIDTH = 1200
+const SVG_HEIGHT = 500 
+const ROAD_WIDTH = 80
+
+// Positions are 0 to 1 along the path
+const EDUCATION_ITEMS = [
   {
     degree: "Bachelor of Science: Electronics Engineering",
     institution: "Yazd University (2012 - 2016)",
-    position: 0.1, // Position along the road path (0-1)
+    pathT: 0.15, 
   },
   {
     degree: "Master of Science: Mechatronics Engineering",
     institution: "Amirkabir University of Technology (AUT) (2016 - 2019) - Distinguished Graduate Award (Ranked 3rd of Class)",
-    position: 0.45, // Position along the road path (0-1)
+    pathT: 0.5, 
   },
   {
     degree: "Doctor of Philosophy: Computer Science and Engineering",
     institution: "University of North Texas (UNT) Texas, USA (2022 - 2026)",
-    position: 0.8, // Position along the road path (0-1) - This is where blue turns to green
+    // Slightly reduced from 0.85 to ensure it hits the green zone comfortably
+    pathT: 0.82, 
   },
 ]
 
-// Calculate point on a curved path (quadratic bezier)
-function getPointOnPath(t: number, width: number, height: number) {
-  // Create a more horizontal curved path similar to Waymo's design
-  // Start from left (extended), curve slightly and go to the right (extended)
-  // Extended road coordinates
-  const startX = -width * 0.1
-  const startY = height * 0.4
-  const controlX = width * 0.5
-  const controlY = height * 0.35 // Slight curve upward
-  const endX = width * 1.1
-  const endY = height * 0.45
-  
-  // Quadratic bezier formula
-  const x = (1 - t) * (1 - t) * startX + 2 * (1 - t) * t * controlX + t * t * endX
-  const y = (1 - t) * (1 - t) * startY + 2 * (1 - t) * t * controlY + t * t * endY
-  
-  // Calculate angle for car rotation
-  const dx = 2 * (1 - t) * (controlX - startX) + 2 * t * (endX - controlX)
-  const dy = 2 * (1 - t) * (controlY - startY) + 2 * t * (endY - controlY)
-  const angle = Math.atan2(dy, dx) * (180 / Math.PI)
-  
-  return { x, y, angle }
+// --- Math Helpers (Unchanged) ---
+function getPointOnBezier(t: number, p0: {x:number, y:number}, p1: {x:number, y:number}, p2: {x:number, y:number}) {
+  const x = (1 - t) * (1 - t) * p0.x + 2 * (1 - t) * t * p1.x + t * t * p2.x
+  const y = (1 - t) * (1 - t) * p0.y + 2 * (1 - t) * t * p1.y + t * t * p2.y
+  return { x, y }
+}
+
+function getAngleOnBezier(t: number, p0: {x:number, y:number}, p1: {x:number, y:number}, p2: {x:number, y:number}) {
+  const dx = 2 * (1 - t) * (p1.x - p0.x) + 2 * t * (p2.x - p1.x)
+  const dy = 2 * (1 - t) * (p1.y - p0.y) + 2 * t * (p2.y - p1.y)
+  return Math.atan2(dy, dx) * (180 / Math.PI)
+}
+
+function splitBezier(t: number, p0: {x:number, y:number}, p1: {x:number, y:number}, p2: {x:number, y:number}) {
+  const mid1 = { x: p0.x + t * (p1.x - p0.x), y: p0.y + t * (p1.y - p0.y) }
+  const mid2 = { x: p1.x + t * (p2.x - p1.x), y: p1.y + t * (p2.y - p1.y) }
+  const splitPoint = { x: mid1.x + t * (mid2.x - mid1.x), y: mid1.y + t * (mid2.y - mid1.y) }
+  return { mid1, mid2, splitPoint }
 }
 
 export function Education() {
   const [scrollProgress, setScrollProgress] = useState(0)
-  const [activeBubble, setActiveBubble] = useState<number | null>(null)
+  const [activeBubbleIndex, setActiveBubbleIndex] = useState<number | null>(null)
   const sectionRef = useRef<HTMLDivElement>(null)
-  const svgRef = useRef<SVGSVGElement>(null)
 
+  // -- Path Definition --
+  // MOVED DOWN: y values increased to ~300-400 range to leave space at top for bubbles
+  const p0 = { x: -SVG_WIDTH * 0.1, y: SVG_HEIGHT * 0.7 } // Start lower left
+  const p1 = { x: SVG_WIDTH * 0.5, y: SVG_HEIGHT * 0.4 }  // Arch peak (lower than before)
+  const p2 = { x: SVG_WIDTH * 1.1, y: SVG_HEIGHT * 0.7 }  // End lower right
+
+  // -- Scroll Logic --
   useEffect(() => {
     const handleScroll = () => {
       if (!sectionRef.current) return
@@ -57,441 +67,201 @@ export function Education() {
       const rect = sectionRef.current.getBoundingClientRect()
       const windowHeight = window.innerHeight
       
-      // Get section boundaries
-      const sectionTop = rect.top
-      const sectionBottom = rect.bottom
+      // --- NEW LOGIC: Trigger earlier ---
+      // Start: When the top of the section hits the bottom of the viewport
+      const startTrigger = windowHeight 
       
-      /* 
-       * CAR ANIMATION LOGIC - REDESIGNED FROM SCRATCH
-       * 
-       * Goal: Car starts when section becomes visible, ends when user scrolls past it
-       * 
-       * Trigger points:
-       * - START (progress = 0): When section BOTTOM enters viewport
-       *   → sectionBottom = windowHeight (bottom edge touches bottom of screen)
-       * 
-       * - END (progress = 1): When section TOP exits viewport  
-       *   → sectionTop = 0 (top edge touches top of screen)
-       * 
-       * Total animation range: from sectionBottom=windowHeight to sectionTop=0
-       * Total distance: windowHeight (the viewport height the section travels through)
-       */
-      
-      let progress = 0
-      
-      // Section hasn't entered viewport yet (completely below screen)
-      if (sectionBottom > windowHeight) {
-        progress = 0
-      }
-      // Section has completely exited viewport (scrolled past - above screen)
-      else if (sectionTop < 0) {
-        progress = 1
-      }
-      // Section is visible or passing through viewport
-      else {
-        // Animation starts when bottom enters (sectionBottom = windowHeight)
-        // Animation ends when top exits (sectionTop = 0)
-        
-        // Simple calculation using sectionTop:
-        // - When sectionTop = windowHeight (section just entering): progress = 0
-        // - When sectionTop = 0 (section exiting): progress = 1
-        
-        progress = 1 - (sectionTop / windowHeight) 
-        
-        // Safety clamp
-        progress = Math.max(0, Math.min(1, progress)) - 0.5
-      }
-      
-      setScrollProgress(progress)
+      // End: When the top of the section is 20% down from the top of the viewport
+      // (This means the section is fully visible and comfortable to read)
+      const endTrigger = windowHeight * 0.2
 
-      // Show bubble when car reaches milestone
-      let newActiveBubble: number | null = null
-      for (let i = educationItems.length - 1; i >= 0; i--) {
-        const milestonePos = educationItems[i].position
-        if (progress >= milestonePos - 0.05) {
-          newActiveBubble = i
-          break
-        }
-      }
-      setActiveBubble(newActiveBubble)
+      const currentPos = rect.top
+      
+      // Calculate progress inversely (as rect.top gets smaller, progress gets larger)
+      let progress = (startTrigger - currentPos) / (startTrigger - endTrigger)
+      
+      // Clamp strictly between 0 and 1
+      progress = Math.max(0, Math.min(1, progress))
+
+      setScrollProgress(progress)
     }
 
     window.addEventListener("scroll", handleScroll, { passive: true })
-    handleScroll() // Initial call
-
+    handleScroll() 
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
-  const svgWidth = 1200
-  const svgHeight = 450
-  const roadWidth = 80
+  // -- Derived Calculations --
+  useEffect(() => {
+    let active = null
+    for (let i = 0; i < EDUCATION_ITEMS.length; i++) {
+        // Bubble triggers slightly earlier to feel responsive
+        if (scrollProgress >= EDUCATION_ITEMS[i].pathT - 0.08) {
+            active = i
+        }
+    }
+    setActiveBubbleIndex(active)
+  }, [scrollProgress])
 
-  // Visible road range constants (milestones appear in this range of the extended road)
-  const visibleStart = 0.15
-  const visibleEnd = 0.85
-
-  // Generate path for the road - more horizontal, extended at front and back
-  // Extended road: start earlier and end later
-  const startX = -svgWidth * 0.1 // Extend road to the left (off-screen start)
-  const startY = svgHeight * 0.4
-  const controlX = svgWidth * 0.5
-  const controlY = svgHeight * 0.35
-  const endX = svgWidth * 1.1 // Extend road to the right (off-screen end)
-  const endY = svgHeight * 0.45
-  const roadPath = `M ${startX} ${startY} Q ${controlX} ${controlY} ${endX} ${endY}`
-
-  // Get car position and angle - map scroll progress to visible road range
-  const carProgressOnRoad = visibleStart + scrollProgress * (visibleEnd - visibleStart)
-  const carPos = getPointOnPath(carProgressOnRoad, svgWidth, svgHeight)
+  const lastItemT = EDUCATION_ITEMS[2].pathT
+  const carT = Math.min(scrollProgress, lastItemT)
+  const carPos = getPointOnBezier(carT, p0, p1, p2)
+  const carAngle = getAngleOnBezier(carT, p0, p1, p2)
+  const splitData = splitBezier(lastItemT, p0, p1, p2)
   
-  // PhD position is where blue turns to green
-  const phdPosition = educationItems[2].position
-  
-  // Calculate PhD point on the path
-  const phdPoint = getPointOnPath(phdPosition, svgWidth, svgHeight)
-  
-  // Create path segments: blue path (start to PhD) and green path (PhD to end)
-  // For quadratic bezier, we need to split at the PhD position
-  // Using De Casteljau's algorithm to split the curve
-  // Map PhD position to visible road range - same calculation as milestones
-  const adjustedPhdPosition = visibleStart + phdPosition * (visibleEnd - visibleStart)
-  const t = adjustedPhdPosition
-  const midX1 = startX + t * (controlX - startX)
-  const midY1 = startY + t * (controlY - startY)
-  const midX2 = controlX + t * (endX - controlX)
-  const midY2 = controlY + t * (endY - controlY)
-  const splitX = midX1 + t * (midX2 - midX1)
-  const splitY = midY1 + t * (midY2 - midY1)
-  
-  // Blue path: from start to PhD position
-  const bluePath = `M ${startX} ${startY} Q ${midX1} ${midY1} ${splitX} ${splitY}`
-  // Green path: from PhD position to end
-  const greenPath = `M ${splitX} ${splitY} Q ${midX2} ${midY2} ${endX} ${endY}`
+  const bluePathString = `M ${p0.x} ${p0.y} Q ${splitData.mid1.x} ${splitData.mid1.y} ${splitData.splitPoint.x} ${splitData.splitPoint.y}`
+  const greenPathString = `M ${splitData.splitPoint.x} ${splitData.splitPoint.y} Q ${splitData.mid2.x} ${splitData.mid2.y} ${p2.x} ${p2.y}`
 
   return (
     <section
       id="education"
       ref={sectionRef}
-      className="py-20 bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 dark:from-background dark:via-background dark:to-background relative overflow-hidden"
+      className="py-20 bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 dark:from-background dark:via-background dark:to-background relative"
     >
       <div className="container mx-auto px-4 relative z-10">
-        <div className="text-center mb-16">
+        <div className="text-center mb-4">
           <h2 className="text-4xl font-bold text-white dark:text-foreground mb-2">EDUCATION</h2>
           <div className="w-16 h-1 bg-blue-500 dark:bg-blue-400 mx-auto" />
         </div>
 
-        <div className="max-w-6xl mx-auto relative">
-          <div className="relative" style={{ minHeight: "300px" }}>
-            <svg
-              ref={svgRef}
-              width="100%"
-              height="300"
-              viewBox={`0 0 ${svgWidth} ${svgHeight}`}
-              className="w-full h-auto"
-              preserveAspectRatio="xMidYMid meet"
-            >
-              {/* Road path - Blue section (before PhD) */}
-              <path
-                d={bluePath}
-                stroke="#3b82f6"
-                strokeWidth={roadWidth}
-                fill="none"
-                strokeLinecap="round"
-                opacity={0.9}
-                className="drop-shadow-lg"
-              />
+        {/* SVG Container */}
+        <div className="relative w-full max-w-6xl mx-auto aspect-[1200/500]">
+          <svg
+            viewBox={`0 0 ${SVG_WIDTH} ${SVG_HEIGHT}`}
+            className="w-full h-full overflow-visible"
+            preserveAspectRatio="xMidYMid meet"
+          >
+            {/* Roads */}
+            <path
+              d={bluePathString}
+              stroke="#3b82f6"
+              strokeWidth={ROAD_WIDTH}
+              fill="none"
+              strokeLinecap="round"
+              className="drop-shadow-lg opacity-90"
+            />
+             <path
+              d={bluePathString}
+              stroke="#ffffff"
+              strokeWidth="2"
+              fill="none"
+              strokeDasharray="15 15"
+              opacity={0.4}
+            />
+            <path
+              d={greenPathString}
+              stroke="#22c55e"
+              strokeWidth={ROAD_WIDTH}
+              fill="none"
+              strokeLinecap="round"
+              className="drop-shadow-lg opacity-90"
+            />
+            <path
+              d={greenPathString}
+              stroke="#ffffff"
+              strokeWidth="2"
+              fill="none"
+              strokeDasharray="15 15"
+              opacity={0.4}
+            />
 
-              {/* Road path - Green section (after PhD milestone) */}
-              <path
-                d={greenPath}
-                stroke="#22c55e"
-                strokeWidth={roadWidth}
-                fill="none"
-                strokeLinecap="round"
-                opacity={0.9}
-                className="drop-shadow-lg"
-              />
+            {/* Milestones & Bubbles */}
+            {EDUCATION_ITEMS.map((item, index) => {
+              const pos = getPointOnBezier(item.pathT, p0, p1, p2)
+              const isPhd = index === 2
+              const isActive = activeBubbleIndex === index
+              
+              return (
+                <g key={index}>
+                  {/* Milestone Dot */}
+                  <circle
+                    cx={pos.x}
+                    cy={pos.y}
+                    r="12"
+                    fill={isPhd ? "#22c55e" : "#3b82f6"}
+                    stroke="white"
+                    strokeWidth="3"
+                  />
 
-              {/* Road center line - Blue section */}
-              <path
-                d={bluePath}
-                stroke="#ffffff"
-                strokeWidth="2"
-                fill="none"
-                strokeDasharray="10 10"
-                opacity={0.3}
-              />
-              {/* Road center line - Green section */}
-              <path
-                d={greenPath}
-                stroke="#ffffff"
-                strokeWidth="2"
-                fill="none"
-                strokeDasharray="10 10"
-                opacity={0.3}
-              />
-
-              {/* Milestones */}
-              {educationItems.map((item, index) => {
-                // Map milestone position to visible road range - same calculation as bubbles
-                const adjustedPosition = visibleStart + item.position * (visibleEnd - visibleStart)
-                const pos = getPointOnPath(adjustedPosition, svgWidth, svgHeight)
-                const isPhd = index === 2 // PhD is the transition point
-                return (
-                  <g key={index}>
-                    {/* Milestone marker */}
-                    <circle
-                      cx={pos.x}
-                      cy={pos.y}
-                      r="20"
-                      fill={isPhd ? "#22c55e" : "#3b82f6"}
-                      stroke="#ffffff"
-                      strokeWidth="3"
-                      className="drop-shadow-lg"
-                    />
-                    <circle
-                      cx={pos.x}
-                      cy={pos.y}
-                      r="8"
-                      fill="#ffffff"
-                    />
-                  </g>
-                )
-              })}
-
-              {/* Autonomous Vehicle - Detailed design */}
-              <g
-                transform={`translate(${carPos.x}, ${carPos.y}) rotate(${carPos.angle})`}
-                className="transition-transform duration-150 ease-out"
-              >
-                {/* Car shadow */}
-                <ellipse
-                  cx="0"
-                  cy="18"
-                  rx="30"
-                  ry="10"
-                  fill="#000000"
-                  opacity="0.25"
-                />
-                
-                {/* Main car body */}
-                <rect
-                  x="-28"
-                  y="-8"
-                  width="56"
-                  height="32"
-                  rx="8"
-                  fill="#ffffff"
-                  className="drop-shadow-lg"
-                  stroke="#d1d5db"
-                  strokeWidth="1.5"
-                />
-                
-                {/* Car roof base */}
-                <rect
-                  x="-24"
-                  y="-12"
-                  width="48"
-                  height="8"
-                  rx="4"
-                  fill="#f9fafb"
-                  stroke="#e5e7eb"
-                  strokeWidth="1"
-                />
-                
-                {/* LIDAR sensor dome (main autonomous sensor) */}
-                <ellipse
-                  cx="0"
-                  cy="-18"
-                  rx="16"
-                  ry="12"
-                  fill="#1f2937"
-                  className="drop-shadow-md"
-                />
-                <ellipse
-                  cx="0"
-                  cy="-18"
-                  rx="12"
-                  ry="8"
-                  fill="#111827"
-                />
-                {/* LIDAR rotating ring */}
-                <ellipse
-                  cx="0"
-                  cy="-18"
-                  rx="14"
-                  ry="10"
-                  fill="none"
-                  stroke="#3b82f6"
-                  strokeWidth="1.5"
-                  opacity="0.6"
-                />
-                
-                {/* Front-facing cameras (small sensors on front) */}
-                <circle cx="-8" cy="-6" r="3" fill="#1f2937" />
-                <circle cx="8" cy="-6" r="3" fill="#1f2937" />
-                <circle cx="-8" cy="-6" r="1.5" fill="#60a5fa" />
-                <circle cx="8" cy="-6" r="1.5" fill="#60a5fa" />
-                
-                {/* Side sensors (on roof edges) */}
-                <rect x="-22" y="-14" width="4" height="6" rx="1" fill="#374151" />
-                <rect x="18" y="-14" width="4" height="6" rx="1" fill="#374151" />
-                
-                {/* Windshield */}
-                <rect
-                  x="-22"
-                  y="-6"
-                  width="44"
-                  height="14"
-                  rx="3"
-                  fill="#bfdbfe"
-                  opacity="0.5"
-                />
-                <rect
-                  x="-20"
-                  y="-4"
-                  width="40"
-                  height="10"
-                  rx="2"
-                  fill="#dbeafe"
-                  opacity="0.3"
-                />
-                
-                {/* Front grille/bumper */}
-                <rect
-                  x="-28"
-                  y="-8"
-                  width="10"
-                  height="32"
-                  rx="8"
-                  fill="#f3f4f6"
-                />
-                <line x1="-26" y1="0" x2="-26" y2="20" stroke="#d1d5db" strokeWidth="1" />
-                <line x1="-22" y1="0" x2="-22" y2="20" stroke="#d1d5db" strokeWidth="1" />
-                
-                {/* Rear bumper */}
-                <rect
-                  x="18"
-                  y="-8"
-                  width="10"
-                  height="32"
-                  rx="8"
-                  fill="#f3f4f6"
-                />
-                
-                {/* Side mirrors */}
-                <ellipse cx="-26" cy="2" rx="3" ry="5" fill="#e5e7eb" />
-                <ellipse cx="26" cy="2" rx="3" ry="5" fill="#e5e7eb" />
-                
-                {/* Wheels - detailed autonomous vehicle style */}
-                <circle cx="-16" cy="16" r="10" fill="#1f2937" className="drop-shadow-md" />
-                <circle cx="16" cy="16" r="10" fill="#1f2937" className="drop-shadow-md" />
-                
-                {/* Wheel rims */}
-                <circle cx="-16" cy="16" r="6" fill="#4b5563" />
-                <circle cx="16" cy="16" r="6" fill="#4b5563" />
-                
-                {/* Wheel centers with hub detail */}
-                <circle cx="-16" cy="16" r="3.5" fill="#6b7280" />
-                <circle cx="16" cy="16" r="3.5" fill="#6b7280" />
-                <circle cx="-16" cy="16" r="2" fill="#9ca3af" />
-                <circle cx="16" cy="16" r="2" fill="#9ca3af" />
-                
-                {/* Wheel spokes (radial pattern) */}
-                {[0, 45, 90, 135].map((angle) => {
-                  const rad = (angle * Math.PI) / 180
-                  const x1 = -16 + Math.cos(rad) * 2
-                  const y1 = 16 + Math.sin(rad) * 2
-                  const x2 = -16 + Math.cos(rad) * 5
-                  const y2 = 16 + Math.sin(rad) * 5
-                  return (
-                    <g key={`left-${angle}`}>
-                      <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="#374151" strokeWidth="1.5" />
-                    </g>
-                  )
-                })}
-                {[0, 45, 90, 135].map((angle) => {
-                  const rad = (angle * Math.PI) / 180
-                  const x1 = 16 + Math.cos(rad) * 2
-                  const y1 = 16 + Math.sin(rad) * 2
-                  const x2 = 16 + Math.cos(rad) * 5
-                  const y2 = 16 + Math.sin(rad) * 5
-                  return (
-                    <g key={`right-${angle}`}>
-                      <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="#374151" strokeWidth="1.5" />
-                    </g>
-                  )
-                })}
-                
-                {/* Side panels/doors */}
-                <rect x="-20" y="4" width="40" height="12" rx="2" fill="#f9fafb" opacity="0.5" />
-                <line x1="-20" y1="10" x2="20" y2="10" stroke="#e5e7eb" strokeWidth="1" />
-              </g>
-            </svg>
-
-            {/* Education info bubbles - positioned using SVG coordinates */}
-            <svg
-              width="100%"
-              height="300"
-              viewBox={`0 0 ${svgWidth} ${svgHeight}`}
-              className="absolute inset-0 pointer-events-none"
-              preserveAspectRatio="xMidYMid meet"
-            >
-              {educationItems.map((item, index) => {
-                // Map milestone position to visible road range - use exact same calculation as milestones
-                const adjustedPosition = visibleStart + item.position * (visibleEnd - visibleStart)
-                const pos = getPointOnPath(adjustedPosition, svgWidth, svgHeight)
-                const isActive = activeBubble === index
-                const isPhd = index === 2
-                
-                // Position bubbles directly centered on top of milestones
-                const bubbleX = 1.28 * pos.x - 168 // Center horizontally exactly on milestone
-                const bubbleY = pos.y - 50 // Position above the milestone
-                
-                return (
-                  <g key={index} opacity={isActive ? 1 : 0} className="transition-opacity duration-500">
-                    {/* Modern bubble with rounded corners */}
+                  {/* Pop-up Bubble */}
+                  <g transform={`translate(${pos.x}, ${pos.y})`}>
                     <foreignObject
-                      x={bubbleX - 200}
-                      y={bubbleY - 120}
-                      width="400"
-                      height="240"
-                      className="pointer-events-auto"
+                      x="-150" 
+                      y="-240" 
+                      width="300"
+                      height="200"
+                      className="overflow-visible"
                     >
-                      <div className="relative">
-                        {/* Modern bubble box with gradient and shadow */}
-                        <div className="bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl shadow-2xl p-6 border border-gray-200 dark:border-gray-700 relative backdrop-blur-sm">
-                          {/* Arrow pointing down to milestone - perfectly centered */}
-                          <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2">
-                            <div className={`w-0 h-0 border-l-[12px] border-r-[12px] border-t-[12px] border-transparent ${
-                              isPhd 
-                                ? "border-t-green-500 dark:border-t-green-400" 
-                                : "border-t-blue-500 dark:border-t-blue-400"
-                            }`}></div>
-                          </div>
-                          
-                          {/* Content */}
-                          <div className="relative z-10">
-                            <h3 className="font-bold text-xl text-gray-900 dark:text-white mb-3 leading-tight break-words">
-                              {item.degree}
-                            </h3>
-                            <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed break-words whitespace-normal">
-                              {item.institution}
-                            </p>
-                          </div>
-                          
-                          {/* Subtle glow effect */}
-                          <div className={`absolute inset-0 rounded-2xl opacity-20 blur-xl ${
-                            isPhd ? "bg-green-400" : "bg-blue-400"
-                          }`}></div>
-                        </div>
+                      <div 
+                        className={`
+                          transition-all duration-500 ease-out transform
+                          ${isActive ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-8 scale-90'}
+                        `}
+                      >
+                         <div className="relative flex flex-col items-center">
+                            <div className="
+                                bg-white dark:bg-slate-800 
+                                p-4 rounded-xl shadow-2xl 
+                                border-l-4 
+                                w-full
+                                backdrop-blur-sm
+                            "
+                            style={{ 
+                                borderLeftColor: isPhd ? '#22c55e' : '#3b82f6' 
+                            }}
+                            >
+                                <h3 className="font-bold text-lg text-slate-900 dark:text-white leading-tight mb-2">
+                                  {item.degree}
+                                </h3>
+                                <p className="text-sm text-slate-600 dark:text-slate-300">
+                                  {item.institution}
+                                </p>
+                            </div>
+
+                            {/* Arrow */}
+                            <div 
+                              className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] mt-[-1px]"
+                              style={{ 
+                                  borderTopColor: '#ffffff',
+                                  filter: 'drop-shadow(0 4px 3px rgb(0 0 0 / 0.07))' 
+                              }}
+                            ></div>
+                            <div 
+                              className="hidden dark:block absolute bottom-0 w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px]"
+                              style={{ borderTopColor: '#1e293b' }} 
+                            ></div>
+                         </div>
                       </div>
                     </foreignObject>
                   </g>
-                )
-              })}
-            </svg>
-          </div>
+                </g>
+              )
+            })}
+
+            {/* Car */}
+            <g
+              transform={`translate(${carPos.x}, ${carPos.y}) rotate(${carAngle})`}
+              className="will-change-transform" // Removed transition here to make it stick perfectly to scroll 1:1
+            >
+               <ellipse cx="0" cy="18" rx="30" ry="10" fill="black" opacity="0.3" blur="2" />
+               <rect x="-28" y="-15" width="56" height="30" rx="8" fill="white" stroke="#94a3b8" strokeWidth="1" />
+               <rect x="-20" y="-12" width="40" height="24" rx="4" fill="#e2e8f0" />
+               <rect x="-16" y="-8" width="20" height="16" rx="2" fill="#bfdbfe" opacity="0.6" />
+               <g transform="translate(0, 0)">
+                  <circle r="12" fill="#1e293b" />
+                  <circle r="8" fill="#0f172a" />
+                  <circle r="10" fill="none" stroke="#3b82f6" strokeWidth="1.5" opacity="0.8">
+                    <animateTransform attributeName="transform" type="rotate" from="0 0 0" to="360 0 0" dur="1s" repeatCount="indefinite" />
+                  </circle>
+               </g>
+               <rect x="-22" y="-18" width="12" height="4" fill="#334155" rx="2" />
+               <rect x="10" y="-18" width="12" height="4" fill="#334155" rx="2" />
+               <rect x="-22" y="14" width="12" height="4" fill="#334155" rx="2" />
+               <rect x="10" y="14" width="12" height="4" fill="#334155" rx="2" />
+               <circle cx="28" cy="-8" r="3" fill="#fbbf24" opacity="0.8" />
+               <circle cx="28" cy="8" r="3" fill="#fbbf24" opacity="0.8" />
+            </g>
+          </svg>
         </div>
       </div>
     </section>
