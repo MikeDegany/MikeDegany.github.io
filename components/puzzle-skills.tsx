@@ -177,21 +177,6 @@ export function PuzzleSkills() {
             {/* Placeholder when nothing is hovered */}
             {!hoveredSkillData && (
               <div className="text-center opacity-50">
-                <div className="w-32 h-32 mx-auto mb-4 rounded-full bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900 flex items-center justify-center">
-                  <svg
-                    className="w-16 h-16 text-blue-500 dark:text-blue-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M13 10V3L4 14h7v7l9-11h-7z"
-                    />
-                  </svg>
-                </div>
                 <p className="text-gray-500 dark:text-gray-400 text-lg font-medium">
                   Hover over a puzzle piece
                 </p>
