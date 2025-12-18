@@ -5,10 +5,10 @@ export function Hero() {
   return (
     <section id="home" className="pt-16">
       <div className="w-full">
-        <div className="grid md:grid-cols-2 min-h-[600px]">
-          {/* Left side - Image */}
-          <div className="relative bg-gradient-to-br from-emerald-900 to-emerald-950 overflow-hidden">
-            <Image src="/HomeImage.png" alt="Mike Degany with robot" fill className="object-cover" />
+        <div className="flex flex-col md:grid md:grid-cols-2 md:min-h-[600px]">
+          {/* Image - appears first on mobile, left side on desktop */}
+          <div className="relative bg-gradient-to-br from-emerald-900 to-emerald-950 overflow-hidden h-[300px] md:h-auto">
+            <Image src="/HomeImage.png" alt="Mike Degany with robot" fill className="object-cover object-top" />
             {/* Subtle top gradient overlay */}
             <div className="absolute inset-0 bg-gradient-to-br from-black/10 to-transparent" />
             {/* Transparent triangle effect at bottom - narrow diagonal */}
@@ -23,12 +23,12 @@ export function Hero() {
             </svg>
           </div>
 
-          {/* Right side - Content */}
-          <div className="relative bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center p-12">
-            <div className="text-center text-white space-y-6">
-              <div className="space-y-3">
+          {/* Content - appears second on mobile, right side on desktop */}
+          <div className="relative bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center p-8 py-12 md:p-12">
+            <div className="text-center text-white space-y-4 md:space-y-6">
+              <div className="space-y-2 md:space-y-3">
                 <h1
-                  className="text-6xl md:text-7xl font-extrabold tracking-wide inline-block text-3d-float transition-transform duration-300 hover:scale-110"
+                  className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-wide inline-block text-3d-float transition-transform duration-300 hover:scale-110"
                   style={{
                     textShadow:
                       "0 2px 0 rgba(0,0,0,0.35), 0 6px 12px rgba(0,0,0,0.4), 0 14px 28px rgba(0,0,0,0.25)",
@@ -38,9 +38,9 @@ export function Hero() {
                 >
                   Mike Degany
                 </h1>
-                <div className="space-y-2">
+                <div className="space-y-1.5 md:space-y-2">
                   <p
-                    className="text-xl font-semibold transition-transform duration-300"
+                    className="text-base sm:text-lg md:text-xl font-semibold transition-transform duration-300"
                     style={{
                       textShadow:
                         "0 1px 0 rgba(0,0,0,0.25), 0 4px 10px rgba(0,0,0,0.35)",
@@ -50,7 +50,7 @@ export function Hero() {
                     Computer Science and Engineering PhD Candidate
                   </p>
                   <p
-                    className="text-xl font-semibold transition-transform duration-300"
+                    className="text-base sm:text-lg md:text-xl font-semibold transition-transform duration-300"
                     style={{
                       textShadow:
                         "0 1px 0 rgba(0,0,0,0.25), 0 4px 10px rgba(0,0,0,0.35)",
@@ -60,7 +60,7 @@ export function Hero() {
                     Mechatronics Engineer | Robotics Engineer
                   </p>
                   <p
-                    className="text-xl font-semibold transition-transform duration-300"
+                    className="text-base sm:text-lg md:text-xl font-semibold transition-transform duration-300"
                     style={{
                       textShadow:
                         "0 1px 0 rgba(0,0,0,0.25), 0 4px 10px rgba(0,0,0,0.35)",
@@ -70,7 +70,7 @@ export function Hero() {
                     Autonomous Vehicles | SLAM & 3D Perception
                   </p>
                   <p
-                    className="text-xl font-semibold transition-transform duration-300"
+                    className="text-base sm:text-lg md:text-xl font-semibold transition-transform duration-300"
                     style={{
                       textShadow:
                         "0 1px 0 rgba(0,0,0,0.25), 0 4px 10px rgba(0,0,0,0.35)",
@@ -83,7 +83,7 @@ export function Hero() {
                 </div>
               </div>
 
-              <div className="flex gap-8 justify-center pt-4 items-center">
+              <div className="flex gap-6 md:gap-8 justify-center pt-2 md:pt-4 items-center">
                 <LinkedInLogo3D />
                 <GitHubLogo3D />
               </div>
