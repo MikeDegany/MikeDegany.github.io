@@ -243,7 +243,7 @@ export function Education() {
               transform={`translate(${carPos.x}, ${carPos.y}) rotate(${carAngle})`}
               className="will-change-transform" // Removed transition here to make it stick perfectly to scroll 1:1
             >
-               <ellipse cx="0" cy="18" rx="30" ry="10" fill="black" opacity="0.3" blur="2" />
+               <ellipse cx="0" cy="18" rx="30" ry="10" fill="black" opacity="0.3" style={{ filter: 'blur(2px)' }} />
                <rect x="-28" y="-15" width="56" height="30" rx="8" fill="white" stroke="#94a3b8" strokeWidth="1" />
                <rect x="-20" y="-12" width="40" height="24" rx="4" fill="#e2e8f0" />
                <rect x="-16" y="-8" width="20" height="16" rx="2" fill="#bfdbfe" opacity="0.6" />
