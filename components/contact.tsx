@@ -14,7 +14,7 @@ export function Contact() {
 
         <div className="max-w-5xl mx-auto">
           {/* Map Image */}
-          <div className="relative h-96 mb-12 rounded-2xl overflow-hidden shadow-2xl">
+          <div className="relative h-64 sm:h-80 md:h-96 mb-12 rounded-2xl overflow-hidden shadow-2xl">
             <Image 
               src="/map1.png" 
               alt="Map location" 
@@ -25,7 +25,7 @@ export function Contact() {
           </div>
 
           {/* 3D Social Icons */}
-          <div className="flex justify-center items-center gap-8 flex-wrap">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-2xl mx-auto place-items-center">
             <EmailLogo3D />
             <LinkedInLogo3D />
             <GitHubLogo3D />
