@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from "react"
 
 // --- Configuration ---
-// Increased height to provide headroom for bubbles
 const SVG_WIDTH = 1200
 const SVG_HEIGHT = 500 
 const ROAD_WIDTH = 80
@@ -13,7 +12,8 @@ const EDUCATION_ITEMS = [
   {
     degree: "Bachelor of Science: Electronics Engineering",
     institution: "Yazd University (2012 - 2016)",
-    pathT: 0.15, 
+    // Adjusted from 0.15 to 0.2 to give the car a "runway" before the first stop
+    pathT: 0.2, 
   },
   {
     degree: "Master of Science: Mechatronics Engineering",
@@ -23,12 +23,11 @@ const EDUCATION_ITEMS = [
   {
     degree: "Doctor of Philosophy: Computer Science and Engineering",
     institution: "University of North Texas (UNT) Texas, USA (2022 - 2026)",
-    // Slightly reduced from 0.85 to ensure it hits the green zone comfortably
     pathT: 0.82, 
   },
 ]
 
-// --- Math Helpers (Unchanged) ---
+// --- Math Helpers ---
 function getPointOnBezier(t: number, p0: {x:number, y:number}, p1: {x:number, y:number}, p2: {x:number, y:number}) {
   const x = (1 - t) * (1 - t) * p0.x + 2 * (1 - t) * t * p1.x + t * t * p2.x
   const y = (1 - t) * (1 - t) * p0.y + 2 * (1 - t) * t * p1.y + t * t * p2.y
@@ -54,10 +53,9 @@ export function Education() {
   const sectionRef = useRef<HTMLDivElement>(null)
 
   // -- Path Definition --
-  // MOVED DOWN: y values increased to ~300-400 range to leave space at top for bubbles
-  const p0 = { x: -SVG_WIDTH * 0.1, y: SVG_HEIGHT * 0.7 } // Start lower left
-  const p1 = { x: SVG_WIDTH * 0.5, y: SVG_HEIGHT * 0.4 }  // Arch peak (lower than before)
-  const p2 = { x: SVG_WIDTH * 1.1, y: SVG_HEIGHT * 0.7 }  // End lower right
+  const p0 = { x: -SVG_WIDTH * 0.1, y: SVG_HEIGHT * 0.7 } 
+  const p1 = { x: SVG_WIDTH * 0.5, y: SVG_HEIGHT * 0.4 } 
+  const p2 = { x: SVG_WIDTH * 1.1, y: SVG_HEIGHT * 0.7 } 
 
   // -- Scroll Logic --
   useEffect(() => {
@@ -67,17 +65,19 @@ export function Education() {
       const rect = sectionRef.current.getBoundingClientRect()
       const windowHeight = window.innerHeight
       
-      // --- NEW LOGIC: Trigger earlier ---
-      // Start: When the top of the section hits the bottom of the viewport
-      const startTrigger = windowHeight 
+      // --- REFINED TRIGGERS ---
       
-      // End: When the top of the section is 20% down from the top of the viewport
-      // (This means the section is fully visible and comfortable to read)
-      const endTrigger = windowHeight * 0.2
+      // Start: When the section header is 60% down the screen (closer to middle).
+      // This delays the start so the car doesn't move while the section is barely visible at the bottom.
+      const startTrigger = windowHeight * 0.6
+      
+      // End: When the section header hits the top of the viewport (0) or slightly above (-50).
+      // This ensures the car keeps moving until the section is fully scrolled through.
+      const endTrigger = -50 
 
       const currentPos = rect.top
       
-      // Calculate progress inversely (as rect.top gets smaller, progress gets larger)
+      // Calculate progress
       let progress = (startTrigger - currentPos) / (startTrigger - endTrigger)
       
       // Clamp strictly between 0 and 1
@@ -95,8 +95,8 @@ export function Education() {
   useEffect(() => {
     let active = null
     for (let i = 0; i < EDUCATION_ITEMS.length; i++) {
-        // Bubble triggers slightly earlier to feel responsive
-        if (scrollProgress >= EDUCATION_ITEMS[i].pathT - 0.08) {
+        // Trigger bubble slightly before reaching the milestone
+        if (scrollProgress >= EDUCATION_ITEMS[i].pathT - 0.05) {
             active = i
         }
     }
@@ -241,9 +241,9 @@ export function Education() {
             {/* Car */}
             <g
               transform={`translate(${carPos.x}, ${carPos.y}) rotate(${carAngle})`}
-              className="will-change-transform" // Removed transition here to make it stick perfectly to scroll 1:1
+              className="will-change-transform"
             >
-               <ellipse cx="0" cy="18" rx="30" ry="10" fill="black" opacity="0.3" style={{ filter: 'blur(2px)' }} />
+               <ellipse cx="0" cy="18" rx="30" ry="10" fill="black" opacity="0.3" blur="2" />
                <rect x="-28" y="-15" width="56" height="30" rx="8" fill="white" stroke="#94a3b8" strokeWidth="1" />
                <rect x="-20" y="-12" width="40" height="24" rx="4" fill="#e2e8f0" />
                <rect x="-16" y="-8" width="20" height="16" rx="2" fill="#bfdbfe" opacity="0.6" />
