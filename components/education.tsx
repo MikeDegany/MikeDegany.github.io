@@ -12,7 +12,6 @@ const EDUCATION_ITEMS = [
   {
     degree: "Bachelor of Science: Electronics Engineering",
     institution: "Yazd University (2012 - 2016)",
-    // Adjusted from 0.15 to 0.2 to give the car a "runway" before the first stop
     pathT: 0.2, 
   },
   {
@@ -65,22 +64,12 @@ export function Education() {
       const rect = sectionRef.current.getBoundingClientRect()
       const windowHeight = window.innerHeight
       
-      // --- REFINED TRIGGERS ---
-      
-      // Start: When the section header is 60% down the screen (closer to middle).
-      // This delays the start so the car doesn't move while the section is barely visible at the bottom.
       const startTrigger = windowHeight * 0.6
-      
-      // End: When the section header hits the top of the viewport (0) or slightly above (-50).
-      // This ensures the car keeps moving until the section is fully scrolled through.
       const endTrigger = -50 
 
       const currentPos = rect.top
       
-      // Calculate progress
       let progress = (startTrigger - currentPos) / (startTrigger - endTrigger)
-      
-      // Clamp strictly between 0 and 1
       progress = Math.max(0, Math.min(1, progress))
 
       setScrollProgress(progress)
@@ -95,7 +84,6 @@ export function Education() {
   useEffect(() => {
     let active = null
     for (let i = 0; i < EDUCATION_ITEMS.length; i++) {
-        // Trigger bubble slightly before reaching the milestone
         if (scrollProgress >= EDUCATION_ITEMS[i].pathT - 0.05) {
             active = i
         }
@@ -243,7 +231,9 @@ export function Education() {
               transform={`translate(${carPos.x}, ${carPos.y}) rotate(${carAngle})`}
               className="will-change-transform"
             >
-               <ellipse cx="0" cy="18" rx="30" ry="10" fill="black" opacity="0.3" blur="2" />
+               {/* FIXED LINE BELOW */}
+               <ellipse cx="0" cy="18" rx="30" ry="10" fill="black" opacity="0.3" style={{ filter: "blur(2px)" }} />
+               
                <rect x="-28" y="-15" width="56" height="30" rx="8" fill="white" stroke="#94a3b8" strokeWidth="1" />
                <rect x="-20" y="-12" width="40" height="24" rx="4" fill="#e2e8f0" />
                <rect x="-16" y="-8" width="20" height="16" rx="2" fill="#bfdbfe" opacity="0.6" />
