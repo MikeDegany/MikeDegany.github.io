@@ -224,10 +224,6 @@ export function PuzzleSkills() {
                 onMouseLeave={() => setHoveredSkill(null)}
                 onClick={() => handleClick(skill.id)}
               >
-                <div
-                  className="w-6 h-6 rounded-full shadow-sm flex-shrink-0"
-                  style={{ backgroundColor: skill.color }}
-                />
                 <span className={`font-semibold text-sm whitespace-nowrap ${
                   activeSkill === skill.id 
                     ? "text-white" 

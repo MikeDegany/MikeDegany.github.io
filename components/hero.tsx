@@ -47,7 +47,7 @@ export function Hero() {
                       transform: "perspective(500px) rotateX(3deg)",
                     }}
                   >
-                    Computer Science and Engineering PhD Candidate
+                    Robotics Software Engineer | Mechatronics Engineer 
                   </p>
                   <p
                     className="text-base sm:text-lg md:text-xl font-semibold transition-transform duration-300"
@@ -57,7 +57,7 @@ export function Hero() {
                       transform: "perspective(500px) rotateX(3deg)",
                     }}
                   >
-                    Mechatronics Engineer | Robotics Engineer
+                    Computer Science and Engineering PhD Candidate 
                   </p>
                   <p
                     className="text-base sm:text-lg md:text-xl font-semibold transition-transform duration-300"
