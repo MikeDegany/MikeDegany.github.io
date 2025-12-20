@@ -35,6 +35,41 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
   // Get other projects for the carousel (exclude current project)
   const otherProjects = projects.filter((p) => p.slug !== slug)
 
+  // If project has a custom component, render it with standard wrapper
+  if (projectContent?.customComponent) {
+    return (
+      <div className="min-h-screen bg-[#fef9e7] dark:bg-background transition-colors">
+        <Header />
+        <DarkModeToggle alwaysVisible />
+
+        <main className="pt-8 pb-20">
+          <div className="container mx-auto px-4">
+            {/* Back button */}
+            <Link href="/#projects" className="inline-block mb-12">
+              <Button variant="ghost" className="text-gray-700 dark:text-foreground hover:text-gray-900 dark:hover:text-foreground/80">
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Back to Projects
+              </Button>
+            </Link>
+
+            {/* Custom Component */}
+            {projectContent.customComponent}
+
+            {/* Related Projects Carousel */}
+            {otherProjects.length > 0 && (
+              <div className="mt-20 pt-12 border-t border-gray-200 dark:border-border">
+                <RelatedProjects currentSlug={slug} projects={otherProjects} />
+              </div>
+            )}
+          </div>
+        </main>
+
+        <Footer />
+      </div>
+    )
+  }
+
+  // Default template
   return (
     <div className="min-h-screen bg-[#fef9e7] dark:bg-background transition-colors">
       <Header />
@@ -63,12 +98,13 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
           {/* Featured Image from project or content - Same width as body */}
           {(projectContent?.images?.[0] || project.image) && (
             <div className="mb-16 max-w-3xl mx-auto">
-              <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-gray-100 dark:bg-gray-800 shadow-xl">
+              <div className="relative w-full rounded-2xl overflow-hidden bg-gray-100 dark:bg-gray-800 shadow-xl">
                 <Image
                   src={projectContent?.images?.[0] || project.image || "/placeholder.svg"}
                   alt={displayTitle}
-                  fill
-                  className="object-cover"
+                  width={1200}
+                  height={675}
+                  className="w-full h-auto"
                   priority
                 />
               </div>
@@ -82,13 +118,14 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
                 {projectContent.images.slice(1).map((image, index) => (
                   <div
                     key={index}
-                    className="relative w-full aspect-video rounded-2xl overflow-hidden bg-gray-100 dark:bg-gray-800 shadow-xl"
+                    className="relative w-full rounded-2xl overflow-hidden bg-gray-100 dark:bg-gray-800 shadow-xl"
                   >
                     <Image
                       src={image}
                       alt={`${displayTitle} - Image ${index + 2}`}
-                      fill
-                      className="object-cover"
+                      width={600}
+                      height={400}
+                      className="w-full h-auto"
                     />
                   </div>
                 ))}

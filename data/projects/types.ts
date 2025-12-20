@@ -8,5 +8,7 @@ export interface ProjectContent {
     url: string
     title?: string
   }[]
+  // Optional: Custom component for complete layout control
+  customComponent?: ReactNode
 }
 
