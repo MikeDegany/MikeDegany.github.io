@@ -81,8 +81,8 @@ export function InteractiveMultiRobotSetup() {
         </p>
       </header>
 
-      {/* Interactive Setup Image */}
-      <div className="mb-16 max-w-5xl mx-auto">
+      {/* Interactive Setup Image (Hidden on mobile, shown on desktop) */}
+      <div className="hidden md:block mb-16 max-w-5xl mx-auto">
         <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-2xl shadow-xl">
           <div className="relative w-full">
             <Image
@@ -178,6 +178,20 @@ export function InteractiveMultiRobotSetup() {
         <p className="text-center text-sm text-gray-600 dark:text-gray-400 mt-4 italic">
           Hover over the labels to highlight specific components
         </p>
+      </div>
+
+      {/* Static Image for Mobile (Shown on mobile, hidden on desktop) */}
+      <div className="md:hidden mb-12 w-full">
+        <div className="bg-gray-100 dark:bg-gray-800 p-2 rounded-xl shadow-lg">
+          <Image
+            src="/multirobotSetup.png"
+            alt="Multi-Robot Setup"
+            width={1400}
+            height={800}
+            className="w-full h-auto rounded-xl"
+            priority
+          />
+        </div>
       </div>
 
       {/* Content Body */}
