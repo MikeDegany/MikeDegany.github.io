@@ -11,60 +11,60 @@ export function InteractiveMultiRobotSetup() {
     { 
       id: "robot1", 
       text: "Robot 1", 
-      labelTop: "856px", 
-      labelLeft: "136px", 
-      dotTop: "931px", 
-      dotLeft: "321px",
+      labelTop: "86.29%", 
+      labelLeft: "13.71%", 
+      dotTop: "93.85%", 
+      dotLeft: "32.36%",
       linePoints: "M 321 931 L 136 856"
     },
     // Robot 2 - Bottom right
     { 
       id: "robot2", 
       text: "Robot 2", 
-      labelTop: "869px", 
-      labelLeft: "935px", 
-      dotTop: "926px", 
-      dotLeft: "755px",
+      labelTop: "87.60%", 
+      labelLeft: "94.25%", 
+      dotTop: "93.35%", 
+      dotLeft: "76.11%",
       linePoints: "M 755 926 L 935 869"
     },
     // Robot 3 - Top left
     { 
       id: "robot3", 
       text: "Robot 3", 
-      labelTop: "640px", 
-      labelLeft: "141px", 
-      dotTop: "759px", 
-      dotLeft: "172px",
+      labelTop: "64.52%", 
+      labelLeft: "14.21%", 
+      dotTop: "76.51%", 
+      dotLeft: "17.34%",
       linePoints: "M 172 759 L 141 640"
     },
     // Robot 4 - Top right
     { 
       id: "robot4", 
       text: "Robot 4", 
-      labelTop: "657px", 
-      labelLeft: "944px", 
-      dotTop: "696px", 
-      dotLeft: "791px",
+      labelTop: "66.23%", 
+      labelLeft: "95.16%", 
+      dotTop: "70.16%", 
+      dotLeft: "79.74%",
       linePoints: "M 791 696 L 944 657"
     },
     // Router - Center of the setup
     { 
       id: "router", 
       text: "High-Performance Router\n(Network Core) for\nMulti-Robot Communication", 
-      labelTop: "729px", 
-      labelLeft: "618px",
-      dotTop: "660px",
-      dotLeft: "498px",
+      labelTop: "73.49%", 
+      labelLeft: "62.30%",
+      dotTop: "66.53%",
+      dotLeft: "50.20%",
       linePoints: ""
     },
     // Monitor - Top center
     { 
       id: "monitor", 
       text: "Collaborative Mapping\n(Dual SLAM View)", 
-      labelTop: "387px", 
-      labelLeft: "498px",
-      dotTop: "311px",
-      dotLeft: "497px",
+      labelTop: "39.01%", 
+      labelLeft: "50.20%",
+      dotTop: "31.35%", 
+      dotLeft: "50.10%",
       linePoints: "M 497 311 L 498 387"
     },
   ]
@@ -95,7 +95,7 @@ export function InteractiveMultiRobotSetup() {
             />
             
             {/* SVG for connection lines */}
-            <svg className="absolute inset-0 w-full h-full pointer-events-none">
+            <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 992 992">
               {labels.map((label) => {
                 if (!label.linePoints) return null
                 const isHovered = hoveredLabel === label.id
@@ -146,9 +146,9 @@ export function InteractiveMultiRobotSetup() {
                       left: label.labelLeft,
                       transform: label.labelLeft === "50%" 
                         ? 'translate(-50%, -50%)' 
-                        : (parseFloat(label.labelLeft) < 50 ? 'translate(0, -50%)' : 'translate(-100%, -50%)'),
+                        : 'translate(-100%, -50%)',
                       backgroundColor: isHovered 
-                        ? 'rgba(59, 130, 246, 0.95)' 
+                        ? 'rgba(59, 130, 246, 0.95)'  
                         : 'rgba(15, 23, 42, 0.85)',
                       opacity: shouldDim ? 0.3 : 1,
                       boxShadow: isHovered 
