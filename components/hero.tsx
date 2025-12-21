@@ -83,14 +83,14 @@ export function Hero() {
                 </div>
               </div>
 
-              <div className="flex gap-6 md:gap-8 justify-center pt-2 md:pt-4 items-center">
+              <div className="flex gap-6 md:gap-8 justify-center pt-2 md:pt-4 items-center relative z-10">
                 <LinkedInLogo3D />
                 <GitHubLogo3D />
               </div>
             </div>
 
             {/* Diagonal overlay */}
-            <svg className="absolute bottom-0 left-0 w-full h-32" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <svg className="absolute bottom-0 left-0 w-full h-32 pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
               <polygon points="0,100 100,50 100,100" className="fill-white dark:fill-background" />
             </svg>
           </div>
