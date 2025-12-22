@@ -15,95 +15,102 @@ const paragraphs = [
 export function AboutMe() {
   const containerRef = useRef<HTMLDivElement>(null)
   const [scrollProgress, setScrollProgress] = useState(0)
+  const [isMobile, setIsMobile] = useState(false)
+
+  // Detect mobile to adjust spacing math
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768)
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   useEffect(() => {
     const handleScroll = () => {
       if (!containerRef.current) return
-
       const container = containerRef.current
       const rect = container.getBoundingClientRect()
       const windowHeight = window.innerHeight
       
-      // Calculate effective scroll distance
-      // The container is sticky, so we track when the top of the container
-      // moves from 0 (start of stick) to -(containerHeight - windowHeight) (end of stick)
       const totalScrollableHeight = rect.height - windowHeight
       
-      // We are interested in the range where rect.top is between 0 and -totalScrollableHeight
+      // Calculate progress 0 to 1
       let progress = -rect.top / totalScrollableHeight
-      
-      // Clamp between 0 and 1
       progress = Math.max(0, Math.min(1, progress))
 
       setScrollProgress(progress)
     }
 
     window.addEventListener("scroll", handleScroll, { passive: true })
-    handleScroll() // Initial calculation
+    handleScroll() 
 
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
   return (
-    // 1. THE TRACK: A tall container that defines how long the scroll lasts
-    // 'h-[300vh]' means the user has to scroll 3 full screen heights to get past this section
-    <section ref={containerRef} className="relative h-[300vh] bg-white dark:bg-background">
+    // TRACK: Shorter on mobile (220vh) to reduce thumb fatigue, taller on desktop (300vh)
+    <section 
+      ref={containerRef} 
+      className="relative h-[220vh] md:h-[300vh] bg-white dark:bg-background overflow-clip"
+    >
       
-      {/* 2. THE CAMERA: Sticky container that holds the view in place */}
-      <div className="sticky top-0 h-screen overflow-hidden flex flex-col justify-center">
+      {/* MOBILE BACKGROUND IMAGE: Faded watermark that only appears on small screens */}
+      <div className="absolute inset-0 md:hidden z-0">
+        <Image
+          src="/about.jpeg"
+          alt="Background"
+          fill
+          className="object-cover opacity-[0.08] dark:opacity-[0.15]" 
+        />
+      </div>
+
+      {/* CAMERA: Sticky container */}
+      <div className="sticky top-0 h-screen overflow-hidden flex flex-col justify-center z-10">
         
-        {/* Header Section (Static within the sticky view) */}
-        <div className="container mx-auto px-4 absolute top-10 left-0 right-0 z-10 text-center">
-          <h2 className="text-4xl font-bold text-gray-900 dark:text-foreground mb-2">ABOUT ME</h2>
+        {/* Header */}
+        <div className="absolute top-8 left-0 right-0 z-20 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-foreground mb-2">ABOUT ME</h2>
           <div className="w-16 h-1 bg-blue-600 dark:bg-blue-400 mx-auto" />
         </div>
 
-        <div className="container mx-auto px-4 max-w-7xl">
-          <div className="grid md:grid-cols-2 gap-12 lg:gap-20 items-center">
+        <div className="container mx-auto px-6 md:px-4 max-w-7xl h-full flex flex-col justify-center">
+          <div className="grid md:grid-cols-2 gap-8 lg:gap-20 items-center h-[70vh] md:h-auto">
             
             {/* LEFT COLUMN: SCROLLING TEXT */}
-            <div className="relative h-[60vh] flex flex-col justify-center">
+            <div className="relative h-full md:h-[60vh] flex flex-col justify-center">
               
-              {/* Top Fade Gradient */}
-              <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-white dark:from-background to-transparent z-20 pointer-events-none" />
-              
-              {/* Bottom Fade Gradient */}
-              <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-white dark:from-background to-transparent z-20 pointer-events-none" />
+              {/* GRADIENTS: Thinner on mobile (h-16) to show more text */}
+              <div className="absolute top-0 left-0 right-0 h-16 md:h-24 bg-gradient-to-b from-white dark:from-background to-transparent z-20 pointer-events-none" />
+              <div className="absolute bottom-0 left-0 right-0 h-16 md:h-24 bg-gradient-to-t from-white dark:from-background to-transparent z-20 pointer-events-none" />
 
-              {/* The Mask Window */}
+              {/* MASK WINDOW */}
               <div className="h-full w-full overflow-hidden relative">
                 <div 
                   className="absolute w-full will-change-transform"
                   style={{
-                    // We translate the text up based on scroll progress
-                    // We start slightly lower (100px) and scroll up through the list
-                    transform: `translateY(calc(100px - ${scrollProgress * (paragraphs.length * 280)}px))` 
+                    // Math adjustments:
+                    // Mobile needs slightly more spacing per item (300px) because text wraps more lines
+                    // Desktop can use tighter spacing (280px)
+                    transform: `translateY(calc(100px - ${scrollProgress * (paragraphs.length * (isMobile ? 320 : 280))}px))` 
                   }}
                 >
                   {paragraphs.map((text, index) => {
-                    // Logic to calculate opacity based on "center focus"
-                    // 1. Calculate the current Y position of this specific paragraph
-                    // 2. Compare it to the center of the viewing window
+                    const paragraphHeight = isMobile ? 320 : 280
+                    const startOffset = 100
                     
-                    const paragraphHeight = 280 // Estimated height + margin in pixels
-                    const startOffset = 100 // Matches the translateY calc above
-                    
-                    // Current position of this item relative to the mask top
                     const currentPos = (index * paragraphHeight) + (startOffset - (scrollProgress * (paragraphs.length * paragraphHeight)))
                     
-                    // Center of the container (assuming 60vh container, approx 400-500px on desktop)
-                    // We can estimate the center point for the fade math
-                    const containerCenter = 300 
+                    // Center point calculation
+                    // On mobile, the "center" of the view might feel slightly higher due to address bars
+                    const containerCenter = isMobile ? 280 : 300 
                     
-                    // Distance from center
                     const dist = Math.abs(currentPos - containerCenter + (paragraphHeight/2))
                     
-                    // Calculate Opacity: 1 at center, 0 at edges (300px away)
-                    let opacity = 1 - (dist / 350) 
-                    opacity = Math.max(0.1, Math.min(1, opacity)) // Clamp opacity
-
-                    // Scale effect for extra polish
-                    const scale = 0.9 + (0.1 * opacity)
+                    // Fade math
+                    let opacity = 1 - (dist / (isMobile ? 300 : 350))
+                    opacity = Math.max(0.1, Math.min(1, opacity))
+                    
+                    const scale = 0.95 + (0.05 * opacity)
 
                     return (
                       <div 
@@ -115,7 +122,7 @@ export function AboutMe() {
                           transform: `scale(${scale})`
                         }}
                       >
-                        <p className="text-xl md:text-2xl font-medium text-gray-800 dark:text-gray-100 leading-relaxed">
+                        <p className="text-lg md:text-2xl font-medium text-gray-800 dark:text-gray-100 leading-relaxed drop-shadow-sm">
                           {text}
                         </p>
                       </div>
@@ -125,17 +132,16 @@ export function AboutMe() {
               </div>
             </div>
 
-            {/* RIGHT COLUMN: STATIC IMAGE */}
+            {/* RIGHT COLUMN: DESKTOP IMAGE (Hidden on Mobile) */}
             <div className="hidden md:flex justify-center items-center h-full">
               <div className="relative w-full max-w-[450px] aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl ring-1 ring-gray-900/10 dark:ring-white/10">
                 <Image
-                  src="/about.jpeg" // Ensure this matches your public folder path
+                  src="/about.jpeg"
                   alt="Profile"
                   fill
                   className="object-cover"
                   priority
                 />
-                {/* Overlay for cinematic look */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
               </div>
             </div>
