@@ -60,7 +60,8 @@ export function AboutMe() {
           src="/about.jpeg"
           alt="Background"
           fill
-          className="object-cover opacity-[0.08] dark:opacity-[0.15]" 
+          // ADDED 'object-center' here to ensure the photo is centered behind text
+          className="object-cover object-center opacity-[0.08] dark:opacity-[0.15]" 
         />
       </div>
 
@@ -88,9 +89,7 @@ export function AboutMe() {
                 <div 
                   className="absolute w-full will-change-transform"
                   style={{
-                    // Math adjustments:
-                    // Mobile needs slightly more spacing per item (300px) because text wraps more lines
-                    // Desktop can use tighter spacing (280px)
+                    // Math adjustments for mobile vs desktop spacing
                     transform: `translateY(calc(100px - ${scrollProgress * (paragraphs.length * (isMobile ? 320 : 280))}px))` 
                   }}
                 >
@@ -101,7 +100,6 @@ export function AboutMe() {
                     const currentPos = (index * paragraphHeight) + (startOffset - (scrollProgress * (paragraphs.length * paragraphHeight)))
                     
                     // Center point calculation
-                    // On mobile, the "center" of the view might feel slightly higher due to address bars
                     const containerCenter = isMobile ? 280 : 300 
                     
                     const dist = Math.abs(currentPos - containerCenter + (paragraphHeight/2))
@@ -122,7 +120,8 @@ export function AboutMe() {
                           transform: `scale(${scale})`
                         }}
                       >
-                        <p className="text-lg md:text-2xl font-medium text-gray-800 dark:text-gray-100 leading-relaxed drop-shadow-sm">
+                        {/* Added text-center for mobile, text-left for desktop */}
+                        <p className="text-lg md:text-2xl font-medium text-gray-800 dark:text-gray-100 leading-relaxed drop-shadow-sm text-center md:text-left">
                           {text}
                         </p>
                       </div>
