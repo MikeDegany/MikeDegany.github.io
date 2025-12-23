@@ -6,25 +6,22 @@ import { ArrowLeft, Volume2, VolumeX } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 // --- CONFIGURATION ---
-// 4-7-8 Breathing Pattern (in milliseconds)
-const PREP_TIME = 4000 // 4 seconds to get ready
+const PREP_TIME = 4000 
 const INHALE_TIME = 4000
 const HOLD_TIME = 7000
 const EXHALE_TIME = 8000
 const CYCLE_DURATION = INHALE_TIME + HOLD_TIME + EXHALE_TIME
 
-// Session Length: 4 cycles x 19s = 76 seconds
 const TOTAL_CYCLES = 4 
 const TOTAL_DURATION = TOTAL_CYCLES * CYCLE_DURATION
 
 export default function RelaxPage() {
   // --- STATE ---
-  // Added "GET_READY" state to handle the transition
   const [status, setStatus] = useState<"PREPARE" | "GET_READY" | "ACTIVE" | "DONE">("PREPARE")
   const [isMuted, setIsMuted] = useState(false)
   
-  // Parallax & Zoom
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
+  // Parallax & Zoom (Shared for Mouse & Gyroscope)
+  const [viewPos, setViewPos] = useState({ x: 0, y: 0 })
   const [zoomLevel, setZoomLevel] = useState(1.1)
 
   // Text State
@@ -43,12 +40,27 @@ export default function RelaxPage() {
     }
   }, [])
 
-  // --- MOUSE & SCROLL HANDLERS ---
+  // --- PARALLAX HANDLERS (MOUSE & GYROSCOPE) ---
   useEffect(() => {
+    // 1. Desktop Mouse Handler
     const handleMouseMove = (e: MouseEvent) => {
       const x = (e.clientX / window.innerWidth) * 2 - 1
       const y = (e.clientY / window.innerHeight) * 2 - 1
-      setMousePos({ x, y })
+      setViewPos({ x, y })
+    }
+
+    // 2. Mobile Gyroscope Handler
+    const handleOrientation = (e: DeviceOrientationEvent) => {
+      if (!e.gamma || !e.beta) return
+
+      // Gamma: Left/Right tilt (-90 to 90). We clamp it to -45/45 for comfort.
+      // Beta: Front/Back tilt (-180 to 180). We assume holding at ~45deg angle.
+      
+      const x = Math.max(-1, Math.min(1, e.gamma / 45))
+      // Normalize Beta around 45 degrees (comfortable holding position)
+      const y = Math.max(-1, Math.min(1, (e.beta - 45) / 45))
+
+      setViewPos({ x, y })
     }
 
     const handleWheel = (e: WheelEvent) => {
@@ -59,15 +71,17 @@ export default function RelaxPage() {
     }
 
     window.addEventListener("mousemove", handleMouseMove)
+    window.addEventListener("deviceorientation", handleOrientation)
     window.addEventListener("wheel", handleWheel)
+    
     return () => {
       window.removeEventListener("mousemove", handleMouseMove)
+      window.removeEventListener("deviceorientation", handleOrientation)
       window.removeEventListener("wheel", handleWheel)
     }
   }, [])
 
   // --- "GET READY" TIMER ---
-  // Handles the 4-second prep phase before breathing starts
   useEffect(() => {
     if (status !== "GET_READY") return
 
@@ -92,14 +106,12 @@ export default function RelaxPage() {
       const now = Date.now()
       const totalElapsed = now - startTime
       
-      // 1. END CONDITION
       if (totalElapsed >= TOTAL_DURATION) {
         setStatus("DONE")
         clearInterval(interval)
         return
       }
 
-      // 2. BREATHING LOGIC (Detailed Instructions)
       const cycleElapsed = totalElapsed % CYCLE_DURATION
       
       if (cycleElapsed < INHALE_TIME) {
@@ -116,7 +128,6 @@ export default function RelaxPage() {
         setBreathProgress(1 - (exhaleElapsed / EXHALE_TIME))
       }
 
-      // 3. NARRATIVE LOGIC (Quotes)
       if (totalElapsed < 15000) {
         setMainText("Watch your thought disappear...")
       } else if (totalElapsed < 40000) {
@@ -133,8 +144,19 @@ export default function RelaxPage() {
   }, [status])
 
   // --- INTERACTION HANDLERS ---
-  const startSession = () => {
-    setStatus("GET_READY") // Start the prep phase first
+  const startSession = async () => {
+    // 1. REQUEST IOS PERMISSION (Must happen on click)
+    if (typeof DeviceOrientationEvent !== 'undefined' && 
+        (DeviceOrientationEvent as any).requestPermission) {
+      try {
+        await (DeviceOrientationEvent as any).requestPermission()
+      } catch (e) {
+        console.log("Orientation permission denied/error", e)
+      }
+    }
+
+    // 2. START SESSION
+    setStatus("GET_READY") 
     if (audioRef.current && !isMuted) {
       audioRef.current.volume = 0.5
       audioRef.current.play().catch(e => console.log("Audio blocked:", e))
@@ -158,13 +180,12 @@ export default function RelaxPage() {
 
   // --- STYLES ---
   const videoStyle = {
-    transform: `scale(${zoomLevel}) translate(${-mousePos.x * 30}px, ${-mousePos.y * 30}px)`,
-    transition: "transform 0.1s ease-out"
+    // Uses viewPos which is updated by either Mouse OR Gyroscope
+    transform: `scale(${zoomLevel}) translate(${-viewPos.x * 30}px, ${-viewPos.y * 30}px)`,
+    transition: "transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1)" // Smoother transition for gyro
   }
 
   const sphereStyle = {
-    // ACTIVE: Shrink with Ease-Out (Fast start, slow end)
-    // PREPARE/GET_READY: Stay full size
     transition: status === "ACTIVE" ? `transform ${TOTAL_DURATION}ms cubic-bezier(0.25, 1, 0.5, 1)` : 'none',
     transform: status === "ACTIVE" ? 'scale(0)' : 'scale(1)',
     cursor: status === "PREPARE" ? 'pointer' : 'default'
@@ -223,7 +244,6 @@ export default function RelaxPage() {
                 ${status === "PREPARE" ? "animate-pulse hover:scale-105 transition-transform duration-500" : ""}
               `}
             >
-              {/* Solid Dark Sphere Visuals */}
               <div className="absolute inset-0 rounded-full bg-[radial-gradient(circle_at_30%_30%,_#4a4a4a,_#000000)]" />
               <div className="absolute inset-0 rounded-full border border-white/10 shadow-[0_0_30px_rgba(0,0,0,0.8)]" />
               
@@ -239,17 +259,14 @@ export default function RelaxPage() {
           <div className="text-center space-y-4 animate-in fade-in duration-700 min-h-[200px] flex flex-col justify-center w-full">
             {status !== "DONE" ? (
               <>
-                {/* Main Quote / Instruction */}
                 <h2 className="text-2xl md:text-4xl font-light leading-relaxed text-white drop-shadow-lg transition-all duration-1000">
                   {mainText}
                 </h2>
                 
-                {/* Breathing Guide */}
                 <p className="text-blue-200/80 font-mono uppercase tracking-widest text-sm md:text-base mt-4 animate-in slide-in-from-bottom-2 fade-in duration-500" key={subText}>
                   {subText}
                 </p>
                 
-                {/* Progress Bar (Visible in ACTIVE) */}
                 {status === "ACTIVE" && (
                   <div className="w-32 h-0.5 bg-white/10 mx-auto rounded-full overflow-hidden mt-6">
                     <div 
@@ -260,7 +277,6 @@ export default function RelaxPage() {
                 )}
               </>
             ) : (
-              /* DONE STATE */
               <div className="space-y-6 animate-in zoom-in fade-in duration-1000 flex flex-col items-center">
                 <h1 className="text-5xl md:text-7xl font-thin text-white tracking-widest">Gone.</h1>
                 <p className="text-xl text-blue-100 font-light">Hope you feel better.</p>
@@ -273,7 +289,6 @@ export default function RelaxPage() {
                     Start Over
                   </Button>
 
-                  {/* LARGE FOOTER - Only appears at end */}
                   <Link 
                     href="/" 
                     className="group flex flex-col items-center gap-2 text-white/50 hover:text-white transition-all duration-300 mt-4"
@@ -291,7 +306,6 @@ export default function RelaxPage() {
         </div>
       </div>
 
-      {/* 5. SMALL FOOTER (Visible only during active/prepare states) */}
       {status !== "DONE" && (
         <div className="absolute bottom-6 left-0 w-full text-center z-50 text-white/20 text-xs font-light tracking-wider">
           Made with ❤ by <Link href="/" className="hover:text-white transition-colors">Mike Degany</Link>
