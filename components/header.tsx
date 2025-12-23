@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { Share2, Network } from "lucide-react"
+import { Share2, Network, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 export function Header() {
@@ -57,7 +57,18 @@ export function Header() {
             ))}
           </nav>
 
-          <div className="flex items-center gap-2 relative">
+          <div className="flex items-center gap-4 relative">
+            <Button 
+              variant="default" // Uses filled color instead of ghost to stand out
+              size="icon"       // Keeps it square
+              className="rounded-full w-12 h-12 bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg hover:shadow-emerald-500/50 transition-all hover:scale-110 mr-2"
+              asChild 
+              title="Relax for a moment"
+            >
+              <Link href="/relax">
+                <Sparkles className="h-6 w-6" /> {/* Larger icon size (h-6 w-6 instead of h-4 w-4) */}
+              </Link>
+            </Button>
             <Button variant="ghost" size="icon" onClick={handleShareClick} title="Share website">
               <Share2 className="h-4 w-4" />
             </Button>
