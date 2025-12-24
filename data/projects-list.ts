@@ -12,8 +12,8 @@ export const projects: Project[] = [
   {
     slug: "multi-robot-mapping-navigation",
     title: "Best Paper Award: Multi-Robot Mapping and Navigation: A Holistic Approach for Collaborative Exploration",
-    briefTitle: "Multi-Robot Mapping & Navigation",
-    description: "Networking in Collaborative Multi-Robot Systems for Enhanced Mapping and Navigation",
+    briefTitle: "Multi-Robot Mapping & Navigation (🏆Best Paper Award)",
+    description: "A Holistic Approach for Collaborative Exploration",
     thumbnail: "/MultiTurtlebot.png",
     image: "/MultiTurtlebot.png",
     youtubeVideo: "https://www.youtube.com/embed/dQw4w9WgXcQ",

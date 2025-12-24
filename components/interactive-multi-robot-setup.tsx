@@ -74,10 +74,10 @@ export function InteractiveMultiRobotSetup() {
       {/* Title Section */}
       <header className="mb-12 max-w-7xl mx-auto">
         <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-foreground leading-normal mb-6">
-          Best Paper Award: Multi-Robot Mapping and Navigation
+        🏆Best Paper Award: Multi-Robot Mapping and Navigation
         </h1>
         <p className="text-base sm:text-lg md:text-xl text-gray-700 dark:text-foreground/80 leading-relaxed font-light">
-          A Holistic Approach for Collaborative Exploration
+        Networking in Collaborative Multi-Robot Systems for Enhanced Mapping and Navigation
         </p>
       </header>
 
