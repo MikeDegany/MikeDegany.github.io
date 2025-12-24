@@ -7,22 +7,45 @@ const paragraphs = [
   "I am a Robotics Engineer specializing in autonomous systems, from perception to planning and control. My Ph.D. work focuses on building scalable 3D mapping and robust navigation solutions for autonomous vehicles.",
   "My research philosophy is built on one core principle: theoretical concepts must be proven with hands-on application. I've been fortunate to work in advanced labs where I moved my ideas from theory to reality.",
   "I have hands-on experience deploying code on full-scale autonomous vehicles, developing novel sensor fusion algorithms that reduced odometry error by 72%, and architecting a multi-robot mapping system that won a Best Paper Award.",
-  "Mechatronics engineer with wide knowledge about different fields such as Electronics, Robotics, Control engineering, Computer science, Mechanics, and System engineering graduated from Amirkabir University of Technology.",
-  "A roboticist with a keen interest in Mobile Robots. Worked in the Mapping and Motion Planning area for mobile robots applications and introduced a novel approach for real-time motion planning in dynamic environments.",
-  "Electronic Engineer with specialization in Embedded Real-Time Systems, highly experienced with computer coding for different types of microcontrollers in multiple languages including Assembly, C/C++.",
+  "I am a Mechatronics engineer with wide knowledge about different fields such as Electronics, Robotics, Control engineering, Computer science, Mechanics, and System engineering graduated from Amirkabir University of Technology.",
+  "I am a roboticist with a keen interest in Mobile Robots. Worked in the Mapping and Motion Planning area for mobile robots applications and introduced a novel approach for real-time motion planning in dynamic environments.",
+  "I am an Electronic Engineer with specialization in Embedded Real-Time Systems, highly experienced with computer coding for different types of microcontrollers in multiple languages including Assembly, C/C++.",
 ]
 
 export function AboutMe() {
   const containerRef = useRef<HTMLDivElement>(null)
   const [scrollProgress, setScrollProgress] = useState(0)
   const [isMobile, setIsMobile] = useState(false)
+  const [sectionHeight, setSectionHeight] = useState(0)
 
-  // Detect mobile to adjust spacing math
+  // Constants for spacing
+  const PARAGRAPH_HEIGHT_MOBILE = 320
+  const PARAGRAPH_HEIGHT_DESKTOP = 280
+  
+  // 1. Determine active paragraph height
+  const paragraphHeight = isMobile ? PARAGRAPH_HEIGHT_MOBILE : PARAGRAPH_HEIGHT_DESKTOP
+
+  // 2. Calculate the exact distance we need to scroll to get from 
+  // the first item being centered to the last item being centered.
+  // We use (length - 1) because we don't want to scroll the last item off-screen.
+  const totalTravelDistance = (paragraphs.length - 1) * paragraphHeight
+
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768)
-    checkMobile()
-    window.addEventListener('resize', checkMobile)
-    return () => window.removeEventListener('resize', checkMobile)
+    const handleResize = () => {
+        const mobile = window.innerWidth < 768
+        setIsMobile(mobile)
+        
+        // 3. Set the physical section height dynamically.
+        // It needs to be the window height (so it acts as a screen) 
+        // + the distance we need to travel.
+        const pHeight = mobile ? PARAGRAPH_HEIGHT_MOBILE : PARAGRAPH_HEIGHT_DESKTOP
+        const travelDist = (paragraphs.length - 1) * pHeight
+        setSectionHeight(window.innerHeight + travelDist)
+    }
+
+    handleResize()
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
   }, [])
 
   useEffect(() => {
@@ -34,6 +57,9 @@ export function AboutMe() {
       
       const totalScrollableHeight = rect.height - windowHeight
       
+      // Prevent divide by zero if calculation hasn't run yet
+      if (totalScrollableHeight <= 0) return 
+
       // Calculate progress 0 to 1
       let progress = -rect.top / totalScrollableHeight
       progress = Math.max(0, Math.min(1, progress))
@@ -45,27 +71,28 @@ export function AboutMe() {
     handleScroll() 
 
     return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
+  }, [sectionHeight]) // Re-run if section height changes
 
   return (
-    // TRACK: Shorter on mobile (220vh) to reduce thumb fatigue, taller on desktop (300vh)
     <section 
       ref={containerRef} 
-      className="relative h-[220vh] md:h-[300vh] bg-white dark:bg-background overflow-clip"
+      // 4. Apply the dynamic height here. 
+      // We keep a default min-h just in case JS hasn't loaded yet.
+      style={{ height: sectionHeight > 0 ? `${sectionHeight}px` : '300vh' }}
+      className="relative bg-white dark:bg-background overflow-clip"
     >
       
-      {/* MOBILE BACKGROUND IMAGE: Faded watermark that only appears on small screens */}
+      {/* MOBILE BACKGROUND IMAGE */}
       <div className="absolute inset-0 md:hidden z-0">
         <Image
           src="/about.jpeg"
           alt="Background"
           fill
-          // ADDED 'object-center' here to ensure the photo is centered behind text
           className="object-cover object-center opacity-[0.08] dark:opacity-[0.15]" 
         />
       </div>
 
-      {/* CAMERA: Sticky container */}
+      {/* STICKY CONTAINER */}
       <div className="sticky top-0 h-screen overflow-hidden flex flex-col justify-center z-10">
         
         {/* Header */}
@@ -80,24 +107,26 @@ export function AboutMe() {
             {/* LEFT COLUMN: SCROLLING TEXT */}
             <div className="relative h-full md:h-[60vh] flex flex-col justify-center">
               
-              {/* GRADIENTS: Thinner on mobile (h-16) to show more text */}
               <div className="absolute top-0 left-0 right-0 h-16 md:h-24 bg-gradient-to-b from-white dark:from-background to-transparent z-20 pointer-events-none" />
               <div className="absolute bottom-0 left-0 right-0 h-16 md:h-24 bg-gradient-to-t from-white dark:from-background to-transparent z-20 pointer-events-none" />
 
-              {/* MASK WINDOW */}
               <div className="h-full w-full overflow-hidden relative">
                 <div 
                   className="absolute w-full will-change-transform"
                   style={{
-                    // Math adjustments for mobile vs desktop spacing
-                    transform: `translateY(calc(100px - ${scrollProgress * (paragraphs.length * (isMobile ? 320 : 280))}px))` 
+                    // 5. CRITICAL FIX:
+                    // Only move the text up by 'totalTravelDistance'. 
+                    // This ensures that when scrollProgress is 1, the LAST item is exactly in the center.
+                    transform: `translateY(calc(100px - ${scrollProgress * totalTravelDistance}px))` 
                   }}
                 >
                   {paragraphs.map((text, index) => {
-                    const paragraphHeight = isMobile ? 320 : 280
-                    const startOffset = 100
+                    // Start offset aligns the first item to the "sweet spot"
+                    const startOffset = 100 
                     
-                    const currentPos = (index * paragraphHeight) + (startOffset - (scrollProgress * (paragraphs.length * paragraphHeight)))
+                    // Current position calculation
+                    // We use totalTravelDistance here as well to sync the fade logic
+                    const currentPos = (index * paragraphHeight) + (startOffset - (scrollProgress * totalTravelDistance))
                     
                     // Center point calculation
                     const containerCenter = isMobile ? 280 : 300 
@@ -120,7 +149,6 @@ export function AboutMe() {
                           transform: `scale(${scale})`
                         }}
                       >
-                        {/* Added text-center for mobile, text-left for desktop */}
                         <p className="text-lg md:text-2xl font-medium text-gray-800 dark:text-gray-100 leading-relaxed drop-shadow-sm text-center md:text-left">
                           {text}
                         </p>
@@ -131,7 +159,7 @@ export function AboutMe() {
               </div>
             </div>
 
-            {/* RIGHT COLUMN: DESKTOP IMAGE (Hidden on Mobile) */}
+            {/* RIGHT COLUMN: DESKTOP IMAGE */}
             <div className="hidden md:flex justify-center items-center h-full">
               <div className="relative w-full max-w-[450px] aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl ring-1 ring-gray-900/10 dark:ring-white/10">
                 <Image
