@@ -25,8 +25,8 @@ export default function RelaxPage() {
   const [zoomLevel, setZoomLevel] = useState(1.1)
 
   // Text State
-  const [mainText, setMainText] = useState("Gather your thoughts into the sphere")
-  const [subText, setSubText] = useState("Click the sphere when you are ready to let go")
+  const [mainText, setMainText] = useState("A meditation to clear your mind")
+  const [subText, setSubText] = useState("Visualize gathering every worry and heavy thought into this sphere. When you are ready to cast them into the sun, click to release.")
   const [breathProgress, setBreathProgress] = useState(0) 
 
   // Refs
@@ -36,30 +36,23 @@ export default function RelaxPage() {
   // --- VIDEO SPEED CONTROL ---
   useEffect(() => {
     if (videoRef.current) {
-      videoRef.current.playbackRate = 0.1 
+      // 0.15 speed stretches a ~12s clip to ~80s (duration of the exercise)
+      videoRef.current.playbackRate = 0.15 
     }
   }, [])
 
   // --- PARALLAX HANDLERS (MOUSE & GYROSCOPE) ---
   useEffect(() => {
-    // 1. Desktop Mouse Handler
     const handleMouseMove = (e: MouseEvent) => {
       const x = (e.clientX / window.innerWidth) * 2 - 1
       const y = (e.clientY / window.innerHeight) * 2 - 1
       setViewPos({ x, y })
     }
 
-    // 2. Mobile Gyroscope Handler
     const handleOrientation = (e: DeviceOrientationEvent) => {
       if (!e.gamma || !e.beta) return
-
-      // Gamma: Left/Right tilt (-90 to 90). We clamp it to -45/45 for comfort.
-      // Beta: Front/Back tilt (-180 to 180). We assume holding at ~45deg angle.
-      
       const x = Math.max(-1, Math.min(1, e.gamma / 45))
-      // Normalize Beta around 45 degrees (comfortable holding position)
       const y = Math.max(-1, Math.min(1, (e.beta - 45) / 45))
-
       setViewPos({ x, y })
     }
 
@@ -86,7 +79,7 @@ export default function RelaxPage() {
     if (status !== "GET_READY") return
 
     setMainText("Relax your shoulders...")
-    setSubText("We will practice Dr. Weil's 4-7-8 Method")
+    setSubText("Prepare to let go.")
 
     const timer = setTimeout(() => {
       setStatus("ACTIVE")
@@ -129,7 +122,7 @@ export default function RelaxPage() {
       }
 
       if (totalElapsed < 15000) {
-        setMainText("Watch your thought disappear...")
+        setMainText("Watch your thoughts burn away...")
       } else if (totalElapsed < 40000) {
         setMainText("Everything you are worried about right now is happening on a tiny rock floating in a sunbeam.")
       } else if (totalElapsed < 65000) {
@@ -145,7 +138,6 @@ export default function RelaxPage() {
 
   // --- INTERACTION HANDLERS ---
   const startSession = async () => {
-    // 1. REQUEST IOS PERMISSION (Must happen on click)
     if (typeof DeviceOrientationEvent !== 'undefined' && 
         (DeviceOrientationEvent as any).requestPermission) {
       try {
@@ -155,7 +147,6 @@ export default function RelaxPage() {
       }
     }
 
-    // 2. START SESSION
     setStatus("GET_READY") 
     if (audioRef.current && !isMuted) {
       audioRef.current.volume = 0.5
@@ -169,8 +160,8 @@ export default function RelaxPage() {
 
   const resetSession = () => {
     setStatus("PREPARE")
-    setMainText("Gather your thoughts into the sphere")
-    setSubText("Click the sphere when you are ready to let go")
+    setMainText("A meditation to clear your mind")
+    setSubText("Visualize gathering every worry and heavy thought into this sphere. When you are ready to cast them into the sun, click to release.")
     setBreathProgress(0)
     if (audioRef.current) {
       audioRef.current.pause()
@@ -180,9 +171,8 @@ export default function RelaxPage() {
 
   // --- STYLES ---
   const videoStyle = {
-    // Uses viewPos which is updated by either Mouse OR Gyroscope
     transform: `scale(${zoomLevel}) translate(${-viewPos.x * 30}px, ${-viewPos.y * 30}px)`,
-    transition: "transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1)" // Smoother transition for gyro
+    transition: "transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1)" 
   }
 
   const sphereStyle = {
@@ -205,13 +195,26 @@ export default function RelaxPage() {
           loop 
           muted 
           playsInline
-          className="w-full h-full object-cover opacity-80"
+          className="w-full h-full object-cover"
           style={videoStyle}
         />
-        <div className="absolute inset-0 bg-black/40" />
+        
+        {/* GLOBAL SHADOW: Applies to whole screen in PREPARE/DONE modes */}
+        <div 
+          className={`
+            absolute inset-0 bg-black transition-opacity duration-1000 ease-in-out 
+            ${(status === 'PREPARE' || status === 'DONE') ? 'opacity-70' : 'opacity-0'}
+          `} 
+        />
       </div>
 
-      {/* 3. TOP NAV */}
+      {/* 3. SUBTLE TEXT GRADIENT (New Feature) */}
+      {/* This sits ON TOP of the video but BEHIND the text. 
+          It creates a smooth dark fade from the bottom up to ensure text readability 
+          even when the screen is shiny/bright. */}
+      <div className="absolute bottom-0 left-0 w-full h-[40vh] bg-gradient-to-t from-black via-black/60 to-transparent pointer-events-none z-0" />
+
+      {/* 4. TOP NAV */}
       <div className="absolute top-0 left-0 w-full p-6 flex justify-between z-50">
         <Link href="/">
           <Button variant="ghost" className="text-white/60 hover:text-white hover:bg-white/10">
@@ -228,47 +231,49 @@ export default function RelaxPage() {
         </Button>
       </div>
 
-      {/* 4. MAIN CONTENT */}
-      <div className="absolute inset-0 z-10 flex flex-col items-center justify-center">
-        <div className="relative flex flex-col items-center justify-center max-w-4xl px-6 w-full">
-          
-          {/* THE SPHERE */}
-          {status !== "DONE" && (
-            <div 
-              onClick={status === "PREPARE" ? startSession : undefined}
-              style={sphereStyle}
-              className={`
-                relative w-[280px] h-[280px] rounded-full 
-                flex items-center justify-center
-                group mb-12
-                ${status === "PREPARE" ? "animate-pulse hover:scale-105 transition-transform duration-500" : ""}
-              `}
-            >
-              <div className="absolute inset-0 rounded-full bg-[radial-gradient(circle_at_30%_30%,_#4a4a4a,_#000000)]" />
-              <div className="absolute inset-0 rounded-full border border-white/10 shadow-[0_0_30px_rgba(0,0,0,0.8)]" />
-              
-              {status === "PREPARE" && (
-                <p className="relative z-10 text-white font-medium tracking-wide group-hover:text-blue-200 transition-colors drop-shadow-md">
-                  Tap to Release
-                </p>
-              )}
+      {/* 5. MAIN CONTENT LAYER */}
+      <div className="absolute inset-0 z-10">
+        
+        {/* A. SPHERE CONTAINER */}
+        {status !== "DONE" && (
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div 
+                onClick={status === "PREPARE" ? startSession : undefined}
+                style={sphereStyle}
+                className={`
+                    relative w-[280px] h-[280px] rounded-full 
+                    flex items-center justify-center
+                    pointer-events-auto
+                    group
+                    ${status === "PREPARE" ? "animate-pulse hover:scale-105 transition-transform duration-500" : ""}
+                `}
+                >
+                <div className="absolute inset-0 rounded-full bg-[radial-gradient(circle_at_30%_30%,_#4a4a4a,_#000000)]" />
+                <div className="absolute inset-0 rounded-full border border-white/10 shadow-[0_0_30px_rgba(0,0,0,0.8)]" />
+                
+                {status === "PREPARE" && (
+                    <p className="relative z-10 text-white font-medium tracking-wide group-hover:text-blue-200 transition-colors drop-shadow-md">
+                    Tap to Release
+                    </p>
+                )}
+                </div>
             </div>
-          )}
+        )}
 
-          {/* TEXT AREA */}
-          <div className="text-center space-y-4 animate-in fade-in duration-700 min-h-[200px] flex flex-col justify-center w-full">
+        {/* B. TEXT CONTAINER */}
+        <div className="absolute bottom-24 left-0 w-full px-6 flex flex-col items-center justify-end text-center space-y-4 animate-in fade-in duration-700 z-20">
             {status !== "DONE" ? (
               <>
-                <h2 className="text-2xl md:text-4xl font-light leading-relaxed text-white drop-shadow-lg transition-all duration-1000">
+                <h2 className="text-2xl md:text-3xl font-light leading-relaxed text-white drop-shadow-lg transition-all duration-1000 max-w-4xl">
                   {mainText}
                 </h2>
                 
-                <p className="text-blue-200/80 font-mono uppercase tracking-widest text-sm md:text-base mt-4 animate-in slide-in-from-bottom-2 fade-in duration-500" key={subText}>
+                <p className="text-blue-200/90 font-mono uppercase tracking-widest text-xs md:text-sm animate-in slide-in-from-bottom-2 fade-in duration-500 max-w-2xl mx-auto leading-relaxed drop-shadow-md" key={subText}>
                   {subText}
                 </p>
                 
                 {status === "ACTIVE" && (
-                  <div className="w-32 h-0.5 bg-white/10 mx-auto rounded-full overflow-hidden mt-6">
+                  <div className="w-64 h-2 bg-white/10 mx-auto rounded-full overflow-hidden mt-6">
                     <div 
                       className="h-full bg-blue-400/80 transition-all duration-75 ease-linear"
                       style={{ width: `${breathProgress * 100}%` }}
@@ -277,11 +282,11 @@ export default function RelaxPage() {
                 )}
               </>
             ) : (
-              <div className="space-y-6 animate-in zoom-in fade-in duration-1000 flex flex-col items-center">
-                <h1 className="text-5xl md:text-7xl font-thin text-white tracking-widest">Gone.</h1>
-                <p className="text-xl text-blue-100 font-light">Hope you feel better.</p>
+              <div className="space-y-6 animate-in zoom-in fade-in duration-1000 flex flex-col items-center pb-8">
+                <h1 className="text-5xl md:text-7xl font-thin text-white tracking-widest drop-shadow-lg">Gone.</h1>
+                <p className="text-xl text-blue-100 font-light drop-shadow-md">Hope you feel better.</p>
                 
-                <div className="pt-8 flex flex-col items-center gap-8">
+                <div className="pt-4 flex flex-col items-center gap-6">
                   <Button 
                     onClick={resetSession}
                     className="bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-full px-8 py-6 text-lg backdrop-blur-sm transition-all hover:scale-105"
@@ -291,7 +296,7 @@ export default function RelaxPage() {
 
                   <Link 
                     href="/" 
-                    className="group flex flex-col items-center gap-2 text-white/50 hover:text-white transition-all duration-300 mt-4"
+                    className="group flex flex-col items-center gap-2 text-white/50 hover:text-white transition-all duration-300"
                   >
                     <span className="text-lg font-light">Made with ❤ by</span>
                     <span className="text-2xl font-medium border-b border-transparent group-hover:border-white transition-all pb-1">
@@ -301,13 +306,12 @@ export default function RelaxPage() {
                 </div>
               </div>
             )}
-          </div>
-
         </div>
+
       </div>
 
       {status !== "DONE" && (
-        <div className="absolute bottom-6 left-0 w-full text-center z-50 text-white/20 text-xs font-light tracking-wider">
+        <div className="absolute bottom-6 left-0 w-full text-center z-50 text-white/40 text-xs font-light tracking-wider drop-shadow-md">
           Made with ❤ by <Link href="/" className="hover:text-white transition-colors">Mike Degany</Link>
         </div>
       )}
