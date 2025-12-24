@@ -197,22 +197,70 @@ export function InteractiveMultiRobotSetup() {
       {/* Content Body */}
       <article className="max-w-3xl mx-auto mb-16">
         <div className="space-y-6 text-base sm:text-lg leading-relaxed text-gray-800 dark:text-foreground/90">
-          <p>
-            Architected a scalable multi-robot collaborative SLAM system, enabling rapid exploration and mapping of large, unknown environments (e.g., warehouses, disaster sites).
-          </p>
-          <p>
-            Enabled multi-robot mapping by establishing efficient wireless communication among robots and off-board computers and implementing shared SLAM system ensuring scalability and reliability.
-          </p>
-          <p>
-            Utilized ROS2, DDS (Data Distribution Service) and/or Zenoh ensuring reliable, reducing latency by 25% and packet loss by 50% at high frequencies.
-          </p>
-          <p>
-            Mitigated interference and minimized traffic by employing distinct domain IDs and namespaces and implementing Domain Bridge preventing data sharing bottleneck and ensuring stable operation on resource-constrained platforms.
-          </p>
+          {/* Paper Abstract */}
+          <div className="mb-8">
+            <p className="mb-4">
+              Multi-robot systems, with their ability to collaboratively navigate and map unknown environments, hold significant promise for a range of applications. In this paper, we strive to enhance the mapping and navigation capabilities of multiple robots to meet the rising demand for efficient multi-robot system and coordination to address real-world challenges.
+            </p>
+            <p className="mb-4">
+              To achieve the objectives, multiple mobile robots are inter-connected using a Data Distribution Service (DDS) domain bridging approach within Robot Operating System 2 (ROS2) framework. This strategy leverages the capabilities of DDS to mitigate interference and minimize network traffic. We integrate the robot poses with corresponding laser scans to construct and optimize a pose graph in order to perform a graph-based Simultaneous Localization and Mapping (SLAM) technique leading to a collaborative map.
+            </p>
+            <p className="mb-4">
+              The robots leverage a ROS2 navigation stack to concurrently traverse both mapped and unexplored areas, continuously updating the collaborative map as they discover new regions. We address networking challenges to ensure stable WiFi communication and effective robot collaboration; highlighting the critical role of network stability and synchronization in multi-robot environments, and offer a practical framework for researchers to optimize mapping and navigation in multi-robot systems.
+            </p>
+            <p className="mb-4">
+              The results show significant advancements in indoor multi-robot mapping and navigation, with enhanced coordination and networking reducing downtime and operational risks; promising substantial benefits for various industries.
+            </p>
+          </div>
+
+          {/* Key Technical Highlights */}
+          <div className="border-t border-gray-200 dark:border-gray-700 pt-6 mt-8">
+            <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-foreground">Key Technical Highlights</h3>
+            <p className="mb-4">
+              Architected a scalable multi-robot collaborative SLAM system, enabling rapid exploration and mapping of large, unknown environments (e.g., warehouses, disaster sites).
+            </p>
+            <p className="mb-4">
+              Enabled multi-robot mapping by establishing efficient wireless communication among robots and off-board computers and implementing shared SLAM system ensuring scalability and reliability.
+            </p>
+            <p className="mb-4">
+              Utilized ROS2, DDS (Data Distribution Service) and/or Zenoh ensuring reliable, reducing latency by 25% and packet loss by 50% at high frequencies.
+            </p>
+            <p>
+              Mitigated interference and minimized traffic by employing distinct domain IDs and namespaces and implementing Domain Bridge preventing data sharing bottleneck and ensuring stable operation on resource-constrained platforms.
+            </p>
+          </div>
+
+          {/* Best Paper Award Notice */}
           <div className="bg-blue-50 dark:bg-gray-800 border-l-4 border-blue-600 p-6 rounded-r-lg mt-8">
             <p className="font-semibold text-gray-900 dark:text-foreground">
               This work resulted in a Best Paper Award at the ISICN (2025) conference
             </p>
+          </div>
+
+          {/* Publication Button */}
+          <div className="flex justify-center mt-8">
+            <a
+              href="https://scholar.google.com/citations?view_op=view_citation&hl=en&user=liIpqPMAAAAJ&citation_for_view=liIpqPMAAAAJ:MXK_kJrjxJIC"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition-colors duration-200"
+            >
+              <svg
+                className="w-5 h-5 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
+              </svg>
+              View Publication
+            </a>
           </div>
         </div>
       </article>
