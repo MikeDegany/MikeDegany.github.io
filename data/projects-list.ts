@@ -23,8 +23,8 @@ export const projects: Project[] = [
     title: "Motion Control for real-platform AutonomousStuff retrofitted Vehicle",
     briefTitle: "Motion Control for Autonomous Vehicle",
     description: "Speed and Steering Controller for an autonomous cart",
-    thumbnail: "/CAVGEM.png",
-    image: "/CAVGEM.png",
+    thumbnail: "/Gem.png",
+    image: "/Gem.png",
     // youtubeVideo: "https://www.youtube.com/embed/dQw4w9WgXcQ",
   },
   {
@@ -33,8 +33,8 @@ export const projects: Project[] = [
     briefTitle: "Motion Planning in Dynamic Environments",
     description:
       "Developed a novel motion planning optimization technique that increased computational efficiency, enabling real-time trajectory execution on resource-constrained embedded platforms.",
-    thumbnail: "/TrajDensity.png",
-    image: "/TrajDensity.png",
+    thumbnail: "/U-turn.png",
+    image: "/U-turn.png",
   },
   {
     slug: "multi-modal-odometry-system",
