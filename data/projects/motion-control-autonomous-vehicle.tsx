@@ -4,20 +4,24 @@ export const content: ProjectContent = {
   title: "Motion Control for real-platform AutonomousStuff retrofitted Vehicle",
   body: (
     <>
-      <h2 className="text-3xl font-bold mb-6 mt-12">Project Goals</h2>
-      <p className="leading-relaxed mb-12 text-lg">
-        Design and implement a robust speed and steering controller for an AutonomousStuff retrofitted
-        electric cart. The controller ensures smooth trajectory following while maintaining safety
-        constraints.
+      <p className="leading-relaxed mb-6 text-lg">
+        The goal of this project was to bridge the gap between high-level software commands and physical motion, essentially giving a retrofitted GEM e4 electric cart its "nervous system." Instead of purchasing and relying on expensive proprietary solutions, we aimed to design and implement a custom interface that would make the vehicle fully controllable, ensuring it could execute speed and steering commands smoothly while strictly adhering to comfort constraints.
       </p>
 
-      <h2 className="text-3xl font-bold mb-6 mt-12">Implementation</h2>
-      <ul className="list-disc pl-6 space-y-3 mb-12 text-lg leading-relaxed">
-        <li>PID controller for speed regulation</li>
-        <li>Stanley controller for lateral path tracking</li>
-        <li>Real-time sensor integration (GPS, IMU, wheel encoders)</li>
-        <li>Safety monitoring and emergency stop functionality</li>
-      </ul>
+      <p className="leading-relaxed mb-6 text-lg">
+        I had the privilege of leading a team of exceptional talents from around the country during an NSF Research Experience for Undergraduates (REU). I continued the development alongside Casey, a Master's student who joined the project later, to finalize the implementation and ensure a successful deployment. We developed a robust Speed and Steering Control (SSC) package, implementing a multi-level Schmitt switching PID controller and integrating core hardware like Velodyne LiDARs, Xsens GNSS/INS, and the PACMod drive-by-wire interface.
+      </p>
+
+      <p className="leading-relaxed mb-6 text-lg">
+        The project demanded rigorous validation beyond the lab. We committed to extensive field testing, happily enduring rainstorms, blazing sunshine, and whatever weather came our way to ensure the system was battle-tested and reliable.
+      </p>
+
+      <p className="leading-relaxed mb-6 text-lg">
+        The result is an open-source package that democratizes access to this technology, providing a free, robust alternative to commercial software suites that typically cost a couple of thousand dollars.
+      </p>
+      <p className="leading-relaxed mb-6 text-lg">
+      (Note: Some of the students from the team are not included in the photo above.)
+      </p>
     </>
   ),
   images: ["/REU2022.jpg"],
