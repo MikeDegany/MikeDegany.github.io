@@ -3,6 +3,10 @@
 import Image from "next/image"
 import { useEffect, useRef, useState } from "react"
 
+// 1. Define constants OUTSIDE to prevent dependency issues
+const PARAGRAPH_HEIGHT_MOBILE = 240
+const PARAGRAPH_HEIGHT_DESKTOP = 280
+
 const paragraphs = [
   "I am a Robotics Engineer specializing in autonomous systems, from perception to planning and control. My Ph.D. work focuses on building scalable 3D mapping and robust navigation solutions for autonomous vehicles.",
   "My research philosophy is built on one core principle: theoretical concepts must be proven with hands-on application. I've been fortunate to work in advanced labs where I moved my ideas from theory to reality.",
@@ -18,36 +22,31 @@ export function AboutMe() {
   const [isMobile, setIsMobile] = useState(false)
   const [sectionHeight, setSectionHeight] = useState(0)
 
-  // Constants for spacing
-  const PARAGRAPH_HEIGHT_MOBILE = 320
-  const PARAGRAPH_HEIGHT_DESKTOP = 280
-  
-  // 1. Determine active paragraph height
+  // Determine current height based on state
   const paragraphHeight = isMobile ? PARAGRAPH_HEIGHT_MOBILE : PARAGRAPH_HEIGHT_DESKTOP
-
-  // 2. Calculate the exact distance we need to scroll to get from 
-  // the first item being centered to the last item being centered.
-  // We use (length - 1) because we don't want to scroll the last item off-screen.
   const totalTravelDistance = (paragraphs.length - 1) * paragraphHeight
 
+  // 2. Handle Resize
   useEffect(() => {
     const handleResize = () => {
+        // Check width
         const mobile = window.innerWidth < 768
         setIsMobile(mobile)
         
-        // 3. Set the physical section height dynamically.
-        // It needs to be the window height (so it acts as a screen) 
-        // + the distance we need to travel.
+        // Recalculate section height needed
         const pHeight = mobile ? PARAGRAPH_HEIGHT_MOBILE : PARAGRAPH_HEIGHT_DESKTOP
         const travelDist = (paragraphs.length - 1) * pHeight
         setSectionHeight(window.innerHeight + travelDist)
     }
 
+    // Run once on mount to set initial correct sizes
     handleResize()
+
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
-  }, [])
+  }, []) 
 
+  // 3. Handle Scroll
   useEffect(() => {
     const handleScroll = () => {
       if (!containerRef.current) return
@@ -57,10 +56,12 @@ export function AboutMe() {
       
       const totalScrollableHeight = rect.height - windowHeight
       
-      // Prevent divide by zero if calculation hasn't run yet
-      if (totalScrollableHeight <= 0) return 
+      // If content fits without scroll, progress is 0
+      if (totalScrollableHeight <= 0) {
+        setScrollProgress(0)
+        return
+      }
 
-      // Calculate progress 0 to 1
       let progress = -rect.top / totalScrollableHeight
       progress = Math.max(0, Math.min(1, progress))
 
@@ -71,90 +72,91 @@ export function AboutMe() {
     handleScroll() 
 
     return () => window.removeEventListener("scroll", handleScroll)
-  }, [sectionHeight]) // Re-run if section height changes
+  }, [sectionHeight])
 
   return (
     <section 
       ref={containerRef} 
-      // 4. Apply the dynamic height here. 
-      // We keep a default min-h just in case JS hasn't loaded yet.
+      // Use suppressHydrationWarning to ignore mismatches on the dynamic height
+      suppressHydrationWarning
       style={{ height: sectionHeight > 0 ? `${sectionHeight}px` : '300vh' }}
       className="relative bg-white dark:bg-background overflow-clip"
     >
       
-      {/* MOBILE BACKGROUND IMAGE */}
-      <div className="absolute inset-0 md:hidden z-0">
-        <Image
-          src="/about.jpeg"
-          alt="Background"
-          fill
-          className="object-cover object-center opacity-[0.08] dark:opacity-[0.15]" 
-        />
-      </div>
-
-      {/* STICKY CONTAINER */}
-      <div className="sticky top-0 h-screen overflow-hidden flex flex-col justify-center z-10">
+      <div className="sticky top-0 h-screen overflow-hidden flex flex-col items-center z-10">
         
         {/* Header */}
-        <div className="absolute top-8 left-0 right-0 z-20 text-center">
+        <div className="absolute top-6 md:top-8 left-0 right-0 z-20 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-foreground mb-2">ABOUT ME</h2>
           <div className="w-16 h-1 bg-blue-600 dark:bg-blue-400 mx-auto" />
         </div>
 
         <div className="container mx-auto px-6 md:px-4 max-w-7xl h-full flex flex-col justify-center">
-          <div className="grid md:grid-cols-2 gap-8 lg:gap-20 items-center h-[70vh] md:h-auto">
+          <div className="grid md:grid-cols-2 gap-8 lg:gap-20 items-center h-full">
             
-            {/* LEFT COLUMN: SCROLLING TEXT */}
-            <div className="relative h-full md:h-[60vh] flex flex-col justify-center">
+            {/* LEFT COLUMN */}
+            <div className="relative h-full flex flex-col justify-center md:justify-center pt-24 md:pt-0">
               
-              <div className="absolute top-0 left-0 right-0 h-16 md:h-24 bg-gradient-to-b from-white dark:from-background to-transparent z-20 pointer-events-none" />
-              <div className="absolute bottom-0 left-0 right-0 h-16 md:h-24 bg-gradient-to-t from-white dark:from-background to-transparent z-20 pointer-events-none" />
+              {/* MOBILE IMAGE SECTION */}
+              <div className="md:hidden flex justify-center mb-6 shrink-0 relative z-30">
+                <div className="relative w-32 h-32 rounded-full border-4 border-white dark:border-gray-800 shadow-xl overflow-hidden">
+                  <Image
+                    src="/about.jpeg"
+                    alt="Profile"
+                    fill
+                    className="object-cover"
+                    priority
+                  />
+                </div>
+              </div>
 
-              <div className="h-full w-full overflow-hidden relative">
-                <div 
-                  className="absolute w-full will-change-transform"
-                  style={{
-                    // 5. CRITICAL FIX:
-                    // Only move the text up by 'totalTravelDistance'. 
-                    // This ensures that when scrollProgress is 1, the LAST item is exactly in the center.
-                    transform: `translateY(calc(100px - ${scrollProgress * totalTravelDistance}px))` 
-                  }}
-                >
-                  {paragraphs.map((text, index) => {
-                    // Start offset aligns the first item to the "sweet spot"
-                    const startOffset = 100 
-                    
-                    // Current position calculation
-                    // We use totalTravelDistance here as well to sync the fade logic
-                    const currentPos = (index * paragraphHeight) + (startOffset - (scrollProgress * totalTravelDistance))
-                    
-                    // Center point calculation
-                    const containerCenter = isMobile ? 280 : 300 
-                    
-                    const dist = Math.abs(currentPos - containerCenter + (paragraphHeight/2))
-                    
-                    // Fade math
-                    let opacity = 1 - (dist / (isMobile ? 300 : 350))
-                    opacity = Math.max(0.1, Math.min(1, opacity))
-                    
-                    const scale = 0.95 + (0.05 * opacity)
+              {/* SCROLLING TEXT CONTAINER */}
+              <div className="relative h-[40vh] md:h-[60vh] flex flex-col justify-center">
+                
+                {/* Gradients */}
+                <div className="absolute top-0 left-0 right-0 h-12 md:h-24 bg-gradient-to-b from-white dark:from-background to-transparent z-20 pointer-events-none" />
+                <div className="absolute bottom-0 left-0 right-0 h-12 md:h-24 bg-gradient-to-t from-white dark:from-background to-transparent z-20 pointer-events-none" />
 
-                    return (
-                      <div 
-                        key={index} 
-                        className="flex items-center justify-start transition-all duration-100 ease-out"
-                        style={{ 
-                          height: `${paragraphHeight}px`,
-                          opacity: opacity,
-                          transform: `scale(${scale})`
-                        }}
-                      >
-                        <p className="text-lg md:text-2xl font-medium text-gray-800 dark:text-gray-100 leading-relaxed drop-shadow-sm text-center md:text-left">
-                          {text}
-                        </p>
-                      </div>
-                    )
-                  })}
+                <div className="h-full w-full overflow-hidden relative">
+                  <div 
+                    className="absolute w-full will-change-transform"
+                    // Add suppression here for the transform calculation
+                    suppressHydrationWarning
+                    style={{
+                      transform: `translateY(calc(100px - ${scrollProgress * totalTravelDistance}px))` 
+                    }}
+                  >
+                    {paragraphs.map((text, index) => {
+                      const startOffset = 100 
+                      const currentPos = (index * paragraphHeight) + (startOffset - (scrollProgress * totalTravelDistance))
+                      const containerCenter = isMobile ? 200 : 300 
+                      
+                      const dist = Math.abs(currentPos - containerCenter + (paragraphHeight/2))
+                      
+                      let opacity = 1 - (dist / (isMobile ? 250 : 350))
+                      opacity = Math.max(0.1, Math.min(1, opacity))
+                      
+                      const scale = 0.95 + (0.05 * opacity)
+
+                      return (
+                        <div 
+                          key={index} 
+                          className="flex items-center justify-center md:justify-start transition-all duration-100 ease-out"
+                          suppressHydrationWarning
+                          style={{ 
+                            height: `${paragraphHeight}px`,
+                            // Using toFixed helps prevent floating point mismatches
+                            opacity: parseFloat(opacity.toFixed(2)),
+                            transform: `scale(${scale.toFixed(3)})`
+                          }}
+                        >
+                          <p className="text-lg md:text-2xl font-medium text-gray-800 dark:text-gray-100 leading-relaxed drop-shadow-sm text-center md:text-left">
+                            {text}
+                          </p>
+                        </div>
+                      )
+                    })}
+                  </div>
                 </div>
               </div>
             </div>
