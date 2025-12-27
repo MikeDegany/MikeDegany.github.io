@@ -7,7 +7,7 @@ const skills = [
     id: 1, 
     name: "Control", 
     color: "#5C7691", 
-    path: "M 140,120 L 140,65 Q 90,75 50,150 L 140,150 L 140,120 Z",
+    path: "M 140,120 L 140,32 Q 80,70 50,150 L 140,150 L 140,120 Z",
     labelX: 95,
     labelY: 110
   },
@@ -15,7 +15,7 @@ const skills = [
     id: 2, 
     name: "SLAM", 
     color: "#E5A84B", 
-    path: "M 150,150 L 150,55 Q 250,25 350,55 L 350,150 L 150,150 Z",
+    path: "M 150,150 L 150,27 Q 250,-20 350,27 L 350,150 L 150,150 Z",
     labelX: 250,
     labelY: 80
   },
@@ -23,7 +23,7 @@ const skills = [
     id: 3, 
     name: "ROS2", 
     color: "#39ADA8", 
-    path: "M 360,150 L 360,65 Q 410,75 450,150 L 360,150 Z",
+    path: "M 360,150 L 360,32 Q 410,55 450,150 L 360,150 Z",
     labelX: 405,
     labelY: 110
   },
@@ -31,7 +31,7 @@ const skills = [
     id: 4, 
     name: "Motion Planning", 
     color: "#9DC46F", 
-    path: "M 140,160 L 50,160 Q 30,220 50,280 L 140,280 L 140,160 Z",
+    path: "M 140,160 L 48,160 Q 30,220 54,280 L 140,280 L 140,160 Z",
     labelX: 95,
     labelY: 220
   },
@@ -47,7 +47,8 @@ const skills = [
     id: 6, 
     name: "Python", 
     color: "#8B5CF6", 
-    path: "M 360,160 L 455,160 Q 470,220 490,280 L 360,280 L 360,160 Z",
+    // path: "M 360,160 L 455,160 Q 470,220 490,280 L 360,280 L 360,160 Z",
+    path: "M 360,160 452 160 452 193 Q 467 223 490 280 L 360 280 360 160Z",
     labelX: 410,
     labelY: 220
   },
@@ -63,7 +64,7 @@ const skills = [
     id: 8, 
     name: "Perception", 
     color: "#F59E0B", 
-    path: "M 240,290 L 470,290 L 480,295 Q 450,310 460,340 Q 465,360 440,380 Q 440,400 425,400 L 240,400 L 240,290 Z",
+    path: "M240 290H240L489 290 459 305 449 329 453 347Q458 355 444 360 455 369 443 380 440 400 440 400L240 400 240 290Z",
     labelX: 355,
     labelY: 345
   },
@@ -71,7 +72,7 @@ const skills = [
     id: 9, 
     name: "Linux", 
     color: "#EF4444", 
-    path: "M 125,415 L 420,415 Q 425,440 380,450 Q 340,440 320,450 L 310,480 L 125,430 Z",
+    path: "M123 410H125L435 410Q425 440 380 450Q340 440 320 450L310 480L125 430Z",
     labelX: 270,
     labelY: 440
   },
@@ -79,7 +80,7 @@ const skills = [
     id: 10, 
     name: "Docker", 
     color: "#EC4899", 
-    path: "M 110,440 L 95,490 L 85,490 L 100,440 Z",
+    path: "M 120,440 L 105,490 L 93,490 L 107,440 Z",
     isLine: true,
     labelX: 95,
     labelY: 465
@@ -88,7 +89,7 @@ const skills = [
     id: 11, 
     name: "Git", 
     color: "#14B8A6", 
-    path: "M 320,490 L 320,540 L 310,540 L 310,490 Z",
+    path: "M 320,490 L 320,540 L 310,540 L 305,490 Z",
     isLine: true,
     labelX: 315,
     labelY: 515
