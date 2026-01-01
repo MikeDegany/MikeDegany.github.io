@@ -262,6 +262,20 @@ export function InteractiveMultiRobotSetup() {
               View Publication
             </a>
           </div>
+
+          {/* Video Section */}
+          <div className="mt-12 mb-8">
+            <h3 className="text-xl font-semibold mb-6 text-gray-900 dark:text-foreground text-center">Project Demonstration</h3>
+            <div className="relative w-full aspect-video rounded-lg overflow-hidden shadow-xl">
+              <iframe
+                className="absolute top-0 left-0 w-full h-full"
+                src="https://www.youtube.com/embed/m7wOw3pMUOk"
+                title="Multi-Robot Mapping and Navigation Demo"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+              ></iframe>
+            </div>
+          </div>
         </div>
       </article>
     </>
