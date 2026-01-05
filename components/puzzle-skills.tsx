@@ -51,9 +51,9 @@ const skills = [
     labelX: 195,
     labelY: 260
   },
-  { // Python
+  { // Perception
     id: 6, 
-    name: "Python", 
+    name: "Perception", 
     color: "#8B5CF6", 
     // path: "M 360,160 L 455,160 Q 470,220 490,280 L 360,280 L 360,160 Z",
     path: "M 360,160 452 160 452 193 Q 467 223 490 280 L 360 280 360 160Z",
@@ -68,9 +68,9 @@ const skills = [
     labelX: 145,
     labelY: 345
   },
-  { // Perception
+  { // Python
     id: 8, 
-    name: "Perception", 
+    name: "Python", 
     color: "#F59E0B", 
     path: "M240 290H240L489 290 459 305 449 329 453 347Q458 355 444 360 455 369 443 380 440 400 440 400L240 400 240 290Z",
     labelX: 355,
