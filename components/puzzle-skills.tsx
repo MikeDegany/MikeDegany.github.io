@@ -3,7 +3,7 @@
 import { useState } from "react"
 
 const skills = [
-  { 
+  { // Control
     id: 1, 
     name: "Control", 
     color: "#5C7691", 
@@ -11,7 +11,7 @@ const skills = [
     labelX: 95,
     labelY: 110
   },
-  { 
+  { // SLAM
     id: 2, 
     name: "SLAM", 
     color: "#E5A84B", 
@@ -19,7 +19,7 @@ const skills = [
     labelX: 250,
     labelY: 80
   },
-  { 
+  { // ROS2
     id: 3, 
     name: "ROS2", 
     color: "#39ADA8", 
@@ -27,7 +27,7 @@ const skills = [
     labelX: 405,
     labelY: 110
   },
-  { 
+  { // Motion Planning
     id: 4, 
     name: "Motion Planning", 
     color: "#9DC46F", 
@@ -35,7 +35,7 @@ const skills = [
     labelX: 95,
     labelY: 220
   },
-  { 
+  { // Modern C++
     id: 5, 
     name: "Modern C++", 
     color: "#4A90E2", 
@@ -43,7 +43,7 @@ const skills = [
     labelX: 270,
     labelY: 200
   },
-  { 
+  { // CMake
     id: 12, 
     name: "CMake", 
     color: "#2E7DAF", 
@@ -51,7 +51,7 @@ const skills = [
     labelX: 195,
     labelY: 260
   },
-  { 
+  { // Python
     id: 6, 
     name: "Python", 
     color: "#8B5CF6", 
@@ -60,7 +60,7 @@ const skills = [
     labelX: 410,
     labelY: 220
   },
-  { 
+  { // Computer Vision
     id: 7, 
     name: "Computer Vision", 
     color: "#10B981", 
@@ -68,7 +68,7 @@ const skills = [
     labelX: 145,
     labelY: 345
   },
-  { 
+  { // Perception
     id: 8, 
     name: "Perception", 
     color: "#F59E0B", 
@@ -76,7 +76,7 @@ const skills = [
     labelX: 355,
     labelY: 345
   },
-  { 
+  { // Linux
     id: 9, 
     name: "Linux", 
     color: "#EF4444", 
@@ -84,7 +84,7 @@ const skills = [
     labelX: 270,
     labelY: 440
   },
-  { 
+  { // Docker
     id: 10, 
     name: "Docker", 
     color: "#EC4899", 
@@ -93,7 +93,7 @@ const skills = [
     labelX: 95,
     labelY: 465
   },
-  { 
+  { // Git
     id: 11, 
     name: "Git", 
     color: "#14B8A6", 
