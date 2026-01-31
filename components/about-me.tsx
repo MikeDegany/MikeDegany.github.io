@@ -76,6 +76,7 @@ export function AboutMe() {
 
   return (
     <section 
+      id="about"
       ref={containerRef} 
       // Use suppressHydrationWarning to ignore mismatches on the dynamic height
       suppressHydrationWarning
