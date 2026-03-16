@@ -263,6 +263,26 @@ export function InteractiveMultiRobotSetup() {
             </a>
           </div>
 
+          {/* BibTeX Citation Section */}
+          <div className="mt-12 border-t border-gray-200 dark:border-gray-700 pt-8">
+            <h3 className="text-xl font-semibold mb-3 text-gray-900 dark:text-foreground">Citation</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+              If you would like to cite this paper, please use the following BibTeX:
+            </p>
+            <div className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 overflow-x-auto">
+              <pre className="text-xs sm:text-sm text-gray-800 dark:text-gray-200 font-mono leading-relaxed">
+{`@inproceedings{dehghani2025networking,
+  title={Networking in Collaborative Multi-Robot Systems for Enhanced Mapping and Navigation},
+  author={Dehghani Tezerjani, Mohammad and Liu, Haining and Yang, Qing and Li, Xinrong and Huang, Yan},
+  booktitle={International Symposium on Intelligent Computing and Networking},
+  pages={3--14},
+  year={2025},
+  organization={Springer}
+}`}
+              </pre>
+            </div>
+          </div>
+
           {/* Video Section */}
           <div className="mt-12 mb-8">
             <h3 className="text-xl font-semibold mb-6 text-gray-900 dark:text-foreground text-center">Project Demonstration</h3>
