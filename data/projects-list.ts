@@ -37,7 +37,7 @@ export const projects: Project[] = [
     image: "/U-turn.png",
   },
   {
-    slug: "multi-modal-odometry-system",
+    slug: "multi-sensor-fusion-odometry",
     title: "Multi-modal Odometry System with Kinematic Constraints that Enhances Motion Estimation for Mobile Robots",
     briefTitle: "Multi-modal Odometry System",
     description:
@@ -54,7 +54,7 @@ export const projects: Project[] = [
     image: "/kinova.png",
   },
   {
-    slug: "federated-3d-reconstruction-mapping",
+    slug: "federated-gaussian-splatting-slam",
     title: "Federated approach for 3D reconstruction and Mapping for Connected Autonomous Vehicles",
     briefTitle: "Federated 3D Reconstruction & Mapping",
     description: "3D Gaussian Splatting meets SLAM",
