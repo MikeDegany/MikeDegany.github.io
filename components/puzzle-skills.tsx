@@ -68,12 +68,20 @@ const skills = [
     labelX: 145,
     labelY: 345
   },
+  { // Machine Learning
+    id: 13, 
+    name: "Machine Learning", 
+    color: "#F97316", 
+    path: "M 240,290 L 320,290 L 320,400 L 240,400 L 240,290 Z",
+    labelX: 300,
+    labelY: 345
+  },
   { // Python
     id: 8, 
     name: "Python", 
     color: "#F59E0B", 
-    path: "M240 290H240L489 290 459 305 449 329 453 347Q458 355 444 360 455 369 443 380 440 400 440 400L240 400 240 290Z",
-    labelX: 355,
+    path: "M 360,290 L 489,290 L 459,305 L 449,329 L 453,347 Q 458,355 444,360 L 455,369 L 443,380 L 440,400 L 330,400 L 330,290 Z",
+    labelX: 415,
     labelY: 345
   },
   { // Linux
