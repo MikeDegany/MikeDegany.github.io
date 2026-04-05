@@ -55,9 +55,9 @@ export const projects: Project[] = [
   },
   {
     slug: "federated-gaussian-splatting-slam",
-    title: "Federated approach for 3D reconstruction and Mapping for Connected Autonomous Vehicles",
-    briefTitle: "Federated 3D Reconstruction & Mapping",
-    description: "3D Gaussian Splatting meets SLAM",
+    title: "F3DGS: Federated 3D Gaussian Splatting for Decentralized Multi-AgentWorld Modeling",
+    briefTitle: "Teaching Robots to Build 3D Worlds Together",
+    description: "A federated 3D Gaussian Splatting framework for decentralized multi-agent 3D reconstruction",
     thumbnail: "/3dgsStreet.png",
     image: "/3dgsStreet.png",
   },
