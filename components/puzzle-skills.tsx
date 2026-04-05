@@ -39,7 +39,7 @@ const skills = [
     id: 5, 
     name: "Modern C++", 
     color: "#4A90E2", 
-    path: "M 150,160 L 350,160 L 350,280 L 240,280 L 240,240 L 150,240 L 150,160 Z",
+    path: "M 150,160 L 350,160 L 350,280 L 249,280 L 249,231 L 150,231 L 150,160 Z",
     labelX: 270,
     labelY: 200
   },
