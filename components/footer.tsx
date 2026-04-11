@@ -26,7 +26,7 @@ export function Footer() {
           ))}
         </nav>
         <div className="text-center text-sm">
-          <p>&copy; 2025 Mike Degany. All rights reserved.</p>
+          <p>&copy; 2026 Mike Degany. All rights reserved.</p>
         </div>
       </div>
     </footer>
