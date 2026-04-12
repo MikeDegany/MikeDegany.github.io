@@ -13,7 +13,7 @@ export const projectContents: Record<string, ProjectContent> = {
   "multi-robot-mapping-navigation": multiRobotMapping,
   "motion-control-autonomous-vehicle": motionControl,
   "motion-planning-dynamic-environments": motionPlanning,
-  "multi-modal-odometry-system": multiModalOdometry,
+  "multi-sensor-fusion-odometry": multiModalOdometry,
   "robotic-manipulator-path-execution": roboticManipulator,
   "federated-gaussian-splatting-slam": federated3D,
 }
