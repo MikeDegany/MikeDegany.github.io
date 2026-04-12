@@ -38,10 +38,9 @@ export const projects: Project[] = [
   },
   {
     slug: "multi-sensor-fusion-odometry",
-    title: "Multi-modal Odometry System with Kinematic Constraints that Enhances Motion Estimation for Mobile Robots",
-    briefTitle: "Multi-modal Odometry System",
-    description:
-      "A hierarchical sensor fusion (LiDAR, Inertial, Wheel Encoders) algorithm that reduced trajectory error by 72%, directly improving navigational reliability and operational safety for mobile robots.",
+    title: "Helping Robots Find Their Way (Even in the Darkest Hallways)",
+    briefTitle: "Helping Robots Find Their Way",
+    description: 'The Challenge of "Sensory Confusion"',
     thumbnail: "/JackalonGrass.jpg",
     image: "/JackalonGrass.jpg",
   },
