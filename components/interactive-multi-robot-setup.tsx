@@ -86,7 +86,7 @@ export function InteractiveMultiRobotSetup() {
         <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-2xl shadow-xl">
           <div className="relative w-full">
             <Image
-              src="/MultiTurtlebot.png"
+              src="/MultiTurtlebot.webp"
               alt="Multi-Robot Setup with Interactive Labels"
               width={1400}
               height={800}

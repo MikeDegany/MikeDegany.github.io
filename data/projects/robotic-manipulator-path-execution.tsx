@@ -23,6 +23,6 @@ export const content: ProjectContent = {
       </ul>
     </>
   ),
-  images: ["/kinova.png"],
+  images: ["/kinova.webp"],
 }
 

@@ -129,5 +129,5 @@ export const content: ProjectContent = {
       </div>
     </>
   ),
-  images: ["/3dgsStreet.png"],
+  images: ["/3dgsStreet.webp"],
 }
