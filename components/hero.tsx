@@ -24,8 +24,24 @@ export function Hero() {
           </div>
 
           {/* Content - appears second on mobile, right side on desktop */}
-          <div className="relative bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center p-8 py-12 md:p-12">
-            <div className="text-center text-white space-y-4 md:space-y-6">
+          <div className="relative isolate flex min-h-[320px] md:min-h-0 md:h-full items-center justify-center overflow-hidden p-8 py-12 md:p-12">
+            <video
+              className="absolute inset-0 h-full w-full object-cover pointer-events-none"
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="auto"
+              aria-hidden
+            >
+              <source src="/videos/hero-jackals.mp4" type="video/mp4" />
+            </video>
+            {/* Semi-transparent overlay between video and text (~55%) */}
+            <div
+              className="absolute inset-0 pointer-events-none bg-black/55"
+              aria-hidden
+            />
+            <div className="relative z-10 text-center text-white space-y-4 md:space-y-6">
               <div className="space-y-2 md:space-y-3">
                 <h1
                   className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-wide inline-block text-3d-float transition-transform duration-300 hover:scale-110"
@@ -90,7 +106,12 @@ export function Hero() {
             </div>
 
             {/* Diagonal overlay */}
-            <svg className="absolute bottom-0 left-0 w-full h-32 pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <svg
+              className="pointer-events-none absolute bottom-0 left-0 z-20 w-full h-32"
+              viewBox="0 0 100 100"
+              preserveAspectRatio="none"
+              aria-hidden
+            >
               <polygon points="0,100 100,50 100,100" className="fill-white dark:fill-background" />
             </svg>
           </div>
