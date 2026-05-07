@@ -4,17 +4,17 @@ import Image from "next/image"
 import { useEffect, useRef, useState } from "react"
 
 // 1. Define constants OUTSIDE to prevent dependency issues
-const PARAGRAPH_HEIGHT_MOBILE = 240
-const PARAGRAPH_HEIGHT_DESKTOP = 280
+const PARAGRAPH_HEIGHT_MOBILE = 280
+const PARAGRAPH_HEIGHT_DESKTOP = 300
 
-const paragraphs = [
-  "I am a Robotics Engineer specializing in autonomous systems, from perception to planning and control. My Ph.D. work focuses on building scalable 3D mapping and robust navigation solutions for autonomous vehicles.",
-  "My research philosophy is built on one core principle: theoretical concepts must be proven with hands-on application. I've been fortunate to work in advanced labs where I moved my ideas from theory to reality.",
-  "I have hands-on experience deploying code on full-scale autonomous vehicles, developing novel sensor fusion algorithms that reduced odometry error by 72%, and architecting a multi-robot mapping system that won a Best Paper Award.",
-  "I am a Mechatronics engineer with wide knowledge about different fields such as Electronics, Robotics, Control engineering, Computer science, Mechanics, and System engineering graduated from Amirkabir University of Technology.",
-  "I am a roboticist with a keen interest in Mobile Robots. Worked in the Mapping and Motion Planning area for mobile robots applications and introduced a novel approach for real-time motion planning in dynamic environments.",
-  "I am an Electronic Engineer with specialization in Embedded Real-Time Systems, highly experienced with computer coding for different types of microcontrollers in multiple languages including Assembly, C/C++.",
-]
+const aboutBeats = [
+  { title: "Robotics Engineer", description: "Ph.D. Candidate at UNT." },
+  { title: "Full-Stack Autonomy", description: "From perception to drive-by-wire." },
+  { title: "Bridge-Builder", description: "Translating complex theory into real-world application." },
+  { title: "Systems Architect", description: "Designing robust, scalable autonomous solutions." },
+  { title: "Spatial Intelligence", description: "Advancing the frontier of 3D mapping and navigation." },
+  { title: "Research Leader", description: "Driving innovation through cross-functional collaboration." },
+] as const
 
 export function AboutMe() {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -24,7 +24,7 @@ export function AboutMe() {
 
   // Determine current height based on state
   const paragraphHeight = isMobile ? PARAGRAPH_HEIGHT_MOBILE : PARAGRAPH_HEIGHT_DESKTOP
-  const totalTravelDistance = (paragraphs.length - 1) * paragraphHeight
+  const totalTravelDistance = (aboutBeats.length - 1) * paragraphHeight
 
   // 2. Handle Resize
   useEffect(() => {
@@ -35,7 +35,7 @@ export function AboutMe() {
         
         // Recalculate section height needed
         const pHeight = mobile ? PARAGRAPH_HEIGHT_MOBILE : PARAGRAPH_HEIGHT_DESKTOP
-        const travelDist = (paragraphs.length - 1) * pHeight
+        const travelDist = (aboutBeats.length - 1) * pHeight
         setSectionHeight(window.innerHeight + travelDist)
     }
 
@@ -92,8 +92,8 @@ export function AboutMe() {
           <div className="w-16 h-1 bg-blue-600 dark:bg-blue-400 mx-auto" />
         </div>
 
-        <div className="container mx-auto px-6 md:px-4 max-w-7xl h-full flex flex-col justify-center">
-          <div className="grid md:grid-cols-2 gap-8 lg:gap-20 items-center h-full">
+        <div className="mx-auto w-full max-w-7xl px-4 sm:px-5 md:px-6 h-full flex flex-col justify-center">
+          <div className="grid md:grid-cols-2 gap-6 md:gap-8 lg:gap-10 items-center h-full">
             
             {/* LEFT COLUMN */}
             <div className="relative h-full flex flex-col justify-center md:justify-center pt-24 md:pt-0">
@@ -112,7 +112,7 @@ export function AboutMe() {
               </div>
 
               {/* SCROLLING TEXT CONTAINER */}
-              <div className="relative h-[40vh] md:h-[60vh] flex flex-col justify-center">
+              <div className="relative h-[44vh] md:h-[58vh] min-h-[220px] md:min-h-[320px] flex flex-col justify-center">
                 
                 {/* Gradients */}
                 <div className="absolute top-0 left-0 right-0 h-12 md:h-24 bg-gradient-to-b from-white dark:from-background to-transparent z-20 pointer-events-none" />
@@ -124,36 +124,41 @@ export function AboutMe() {
                     // Add suppression here for the transform calculation
                     suppressHydrationWarning
                     style={{
-                      transform: `translateY(calc(100px - ${scrollProgress * totalTravelDistance}px))` 
+                      transform: `translateY(calc(72px - ${scrollProgress * totalTravelDistance}px))`,
                     }}
                   >
-                    {paragraphs.map((text, index) => {
-                      const startOffset = 100 
-                      const currentPos = (index * paragraphHeight) + (startOffset - (scrollProgress * totalTravelDistance))
-                      const containerCenter = isMobile ? 200 : 300 
-                      
-                      const dist = Math.abs(currentPos - containerCenter + (paragraphHeight/2))
-                      
-                      let opacity = 1 - (dist / (isMobile ? 250 : 350))
-                      opacity = Math.max(0.1, Math.min(1, opacity))
-                      
-                      const scale = 0.95 + (0.05 * opacity)
+                    {aboutBeats.map((beat, index) => {
+                      const startOffset = 72
+                      const currentPos =
+                        index * paragraphHeight + (startOffset - scrollProgress * totalTravelDistance)
+                      const containerCenter = isMobile ? 200 : 300
+
+                      const dist = Math.abs(currentPos - containerCenter + paragraphHeight / 2)
+
+                      let opacity = 1 - dist / (isMobile ? 260 : 360)
+                      opacity = Math.max(0.2, Math.min(1, opacity))
+
+                      const scale = 0.95 + 0.05 * opacity
 
                       return (
-                        <div 
-                          key={index} 
-                          className="flex items-center justify-center md:justify-start transition-all duration-100 ease-out"
+                        <div
+                          key={beat.title}
+                          className="flex items-center justify-center transition-all duration-100 ease-out"
                           suppressHydrationWarning
-                          style={{ 
+                          style={{
                             height: `${paragraphHeight}px`,
-                            // Using toFixed helps prevent floating point mismatches
                             opacity: parseFloat(opacity.toFixed(2)),
-                            transform: `scale(${scale.toFixed(3)})`
+                            transform: `scale(${scale.toFixed(3)})`,
                           }}
                         >
-                          <p className="text-lg md:text-2xl font-medium text-gray-800 dark:text-gray-100 leading-relaxed drop-shadow-sm text-center md:text-left">
-                            {text}
-                          </p>
+                          <div className="w-full max-w-2xl mx-auto px-1 sm:px-2 text-center">
+                            <h3 className="text-4xl sm:text-5xl md:text-6xl font-semibold tracking-tight text-balance text-gray-950 dark:text-white drop-shadow-sm">
+                              {beat.title}
+                            </h3>
+                            <p className="mt-3 md:mt-4 text-xl sm:text-2xl md:text-3xl font-medium text-gray-700 dark:text-gray-300 text-pretty leading-snug">
+                              {beat.description}
+                            </p>
+                          </div>
                         </div>
                       )
                     })}
@@ -163,8 +168,8 @@ export function AboutMe() {
             </div>
 
             {/* RIGHT COLUMN: DESKTOP IMAGE */}
-            <div className="hidden md:flex justify-center items-center h-full">
-              <div className="relative w-full max-w-[450px] aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl ring-1 ring-gray-900/10 dark:ring-white/10">
+            <div className="hidden md:flex justify-center items-center h-full md:pl-2">
+              <div className="relative w-full max-w-[min(520px,calc(50vw-3rem))] aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl ring-1 ring-gray-900/10 dark:ring-white/10">
                 <Image
                   src="/about.jpeg"
                   alt="Profile"
