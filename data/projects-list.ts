@@ -10,6 +10,14 @@ export interface Project {
 
 export const projects: Project[] = [
   {
+    slug: "federated-gaussian-splatting-slam",
+    title: "F3DGS: Federated 3D Gaussian Splatting for Decentralized Multi-AgentWorld Modeling",
+    briefTitle: "[CVPR 2026] Teaching Robots to Build 3D Worlds Together",
+    description: "A federated 3D Gaussian Splatting framework for decentralized multi-agent 3D reconstruction",
+    thumbnail: "/3dgsStreet-thumb.webp",
+    image: "/3dgsStreet.webp",
+  },
+  {
     slug: "multi-robot-mapping-navigation",
     title: "Best Paper Award: Multi-Robot Mapping and Navigation: A Holistic Approach for Collaborative Exploration",
     briefTitle: "Multi-Robot Mapping & Navigation (🏆Best Paper Award)",
@@ -51,14 +59,6 @@ export const projects: Project[] = [
     description: "Simulated Kinovarobotics manipulator in Gazebo and Controlled in ROS",
     thumbnail: "/kinova-thumb.webp",
     image: "/kinova.webp",
-  },
-  {
-    slug: "federated-gaussian-splatting-slam",
-    title: "F3DGS: Federated 3D Gaussian Splatting for Decentralized Multi-AgentWorld Modeling",
-    briefTitle: "Teaching Robots to Build 3D Worlds Together",
-    description: "A federated 3D Gaussian Splatting framework for decentralized multi-agent 3D reconstruction",
-    thumbnail: "/3dgsStreet-thumb.webp",
-    image: "/3dgsStreet.webp",
   },
 ]
 
