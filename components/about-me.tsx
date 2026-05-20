@@ -7,14 +7,43 @@ import { useEffect, useRef, useState } from "react"
 const PARAGRAPH_HEIGHT_MOBILE = 280
 const PARAGRAPH_HEIGHT_DESKTOP = 300
 
-const aboutBeats = [
-  { title: "Robotics Engineer", description: "Ph.D. Candidate at UNT." },
+type AboutBeat =
+  | { title: string; description: string }
+  | { title: string; descriptionLines: [string, string] }
+
+const aboutBeats: AboutBeat[] = [
+  {
+    title: "Robotics Engineer",
+    descriptionLines: [
+      "PhD Candidate",
+      "Vehicle Autonomy and Intelligence Lab @ UNT",
+    ],
+  },
   { title: "Full-Stack Autonomy", description: "From perception to drive-by-wire." },
   { title: "Bridge-Builder", description: "Translating complex theory into real-world application." },
   { title: "Systems Architect", description: "Designing robust, scalable autonomous solutions." },
   { title: "Spatial Intelligence", description: "Advancing the frontier of 3D mapping and navigation." },
   { title: "Research Leader", description: "Driving innovation through cross-functional collaboration." },
-] as const
+]
+
+function BeatDescription({ beat }: { beat: AboutBeat }) {
+  const baseClass =
+    "mt-3 md:mt-4 text-xl sm:text-2xl md:text-3xl font-medium text-gray-700 dark:text-gray-300 text-pretty leading-snug"
+
+  if ("descriptionLines" in beat) {
+    return (
+      <p className={baseClass}>
+        {beat.descriptionLines[0]}
+        <br />
+        <span className="mt-1 inline-block text-lg sm:text-xl md:text-2xl font-normal text-gray-600 dark:text-gray-400">
+          {beat.descriptionLines[1]}
+        </span>
+      </p>
+    )
+  }
+
+  return <p className={baseClass}>{beat.description}</p>
+}
 
 export function AboutMe() {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -155,9 +184,7 @@ export function AboutMe() {
                             <h3 className="text-4xl sm:text-5xl md:text-6xl font-semibold tracking-tight text-balance text-gray-950 dark:text-white drop-shadow-sm">
                               {beat.title}
                             </h3>
-                            <p className="mt-3 md:mt-4 text-xl sm:text-2xl md:text-3xl font-medium text-gray-700 dark:text-gray-300 text-pretty leading-snug">
-                              {beat.description}
-                            </p>
+                            <BeatDescription beat={beat} />
                           </div>
                         </div>
                       )
