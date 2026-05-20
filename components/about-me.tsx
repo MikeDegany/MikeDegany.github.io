@@ -8,7 +8,11 @@ const PARAGRAPH_HEIGHT_MOBILE = 280
 const PARAGRAPH_HEIGHT_DESKTOP = 300
 
 const aboutBeats = [
-  { title: "Robotics Engineer", description: "Ph.D. Candidate at UNT." },
+  {
+    title: "Robotics Engineer",
+    descriptionLines: ["Ph.D. Candidate",
+      "Vehicle Autonomy and Intelligence Lab @ UNT"],
+  },
   { title: "Full-Stack Autonomy", description: "From perception to drive-by-wire." },
   { title: "Bridge-Builder", description: "Translating complex theory into real-world application." },
   { title: "Systems Architect", description: "Designing robust, scalable autonomous solutions." },
@@ -29,14 +33,14 @@ export function AboutMe() {
   // 2. Handle Resize
   useEffect(() => {
     const handleResize = () => {
-        // Check width
-        const mobile = window.innerWidth < 768
-        setIsMobile(mobile)
-        
-        // Recalculate section height needed
-        const pHeight = mobile ? PARAGRAPH_HEIGHT_MOBILE : PARAGRAPH_HEIGHT_DESKTOP
-        const travelDist = (aboutBeats.length - 1) * pHeight
-        setSectionHeight(window.innerHeight + travelDist)
+      // Check width
+      const mobile = window.innerWidth < 768
+      setIsMobile(mobile)
+
+      // Recalculate section height needed
+      const pHeight = mobile ? PARAGRAPH_HEIGHT_MOBILE : PARAGRAPH_HEIGHT_DESKTOP
+      const travelDist = (aboutBeats.length - 1) * pHeight
+      setSectionHeight(window.innerHeight + travelDist)
     }
 
     // Run once on mount to set initial correct sizes
@@ -44,7 +48,7 @@ export function AboutMe() {
 
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
-  }, []) 
+  }, [])
 
   // 3. Handle Scroll
   useEffect(() => {
@@ -53,9 +57,9 @@ export function AboutMe() {
       const container = containerRef.current
       const rect = container.getBoundingClientRect()
       const windowHeight = window.innerHeight
-      
+
       const totalScrollableHeight = rect.height - windowHeight
-      
+
       // If content fits without scroll, progress is 0
       if (totalScrollableHeight <= 0) {
         setScrollProgress(0)
@@ -69,23 +73,23 @@ export function AboutMe() {
     }
 
     window.addEventListener("scroll", handleScroll, { passive: true })
-    handleScroll() 
+    handleScroll()
 
     return () => window.removeEventListener("scroll", handleScroll)
   }, [sectionHeight])
 
   return (
-    <section 
+    <section
       id="about"
-      ref={containerRef} 
+      ref={containerRef}
       // Use suppressHydrationWarning to ignore mismatches on the dynamic height
       suppressHydrationWarning
       style={{ height: sectionHeight > 0 ? `${sectionHeight}px` : '300vh' }}
       className="relative bg-white dark:bg-background overflow-clip"
     >
-      
+
       <div className="sticky top-0 h-screen overflow-hidden flex flex-col items-center z-10">
-        
+
         {/* Header */}
         <div className="absolute top-6 md:top-8 left-0 right-0 z-20 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-foreground mb-2">ABOUT ME</h2>
@@ -94,10 +98,10 @@ export function AboutMe() {
 
         <div className="mx-auto w-full max-w-7xl px-4 sm:px-5 md:px-6 h-full flex flex-col justify-center">
           <div className="grid md:grid-cols-2 gap-6 md:gap-8 lg:gap-10 items-center h-full">
-            
+
             {/* LEFT COLUMN */}
             <div className="relative h-full flex flex-col justify-center md:justify-center pt-24 md:pt-0">
-              
+
               {/* MOBILE IMAGE SECTION */}
               <div className="md:hidden flex justify-center mb-6 shrink-0 relative z-30">
                 <div className="relative w-32 h-32 rounded-full border-4 border-white dark:border-gray-800 shadow-xl overflow-hidden">
@@ -113,13 +117,13 @@ export function AboutMe() {
 
               {/* SCROLLING TEXT CONTAINER */}
               <div className="relative h-[44vh] md:h-[58vh] min-h-[220px] md:min-h-[320px] flex flex-col justify-center">
-                
+
                 {/* Gradients */}
                 <div className="absolute top-0 left-0 right-0 h-12 md:h-24 bg-gradient-to-b from-white dark:from-background to-transparent z-20 pointer-events-none" />
                 <div className="absolute bottom-0 left-0 right-0 h-12 md:h-24 bg-gradient-to-t from-white dark:from-background to-transparent z-20 pointer-events-none" />
 
                 <div className="h-full w-full overflow-hidden relative">
-                  <div 
+                  <div
                     className="absolute w-full will-change-transform"
                     // Add suppression here for the transform calculation
                     suppressHydrationWarning
@@ -155,9 +159,19 @@ export function AboutMe() {
                             <h3 className="text-4xl sm:text-5xl md:text-6xl font-semibold tracking-tight text-balance text-gray-950 dark:text-white drop-shadow-sm">
                               {beat.title}
                             </h3>
-                            <p className="mt-3 md:mt-4 text-xl sm:text-2xl md:text-3xl font-medium text-gray-700 dark:text-gray-300 text-pretty leading-snug">
-                              {beat.description}
-                            </p>
+                            {"descriptionLines" in beat && beat.descriptionLines ? (
+                              <p className="mt-3 md:mt-4 text-xl sm:text-2xl md:text-3xl font-medium text-gray-700 dark:text-gray-300 text-pretty leading-snug">
+                                {beat.descriptionLines[0]}
+                                <br />
+                                <span className="mt-1 inline-block text-lg sm:text-xl md:text-2xl font-normal text-gray-600 dark:text-gray-400">
+                                  {beat.descriptionLines[1]}
+                                </span>
+                              </p>
+                            ) : (
+                              <p className="mt-3 md:mt-4 text-xl sm:text-2xl md:text-3xl font-medium text-gray-700 dark:text-gray-300 text-pretty leading-snug">
+                                {beat.description}
+                              </p>
+                            )}
                           </div>
                         </div>
                       )
