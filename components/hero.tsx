@@ -1,30 +1,12 @@
-import Image from "next/image"
 import { LinkedInLogo3D, GitHubLogo3D } from "@/components/social-logos"
 
 export function Hero() {
   return (
     <section id="home" className="pt-16">
       <div className="w-full">
-        <div className="flex flex-col md:grid md:grid-cols-2 md:min-h-[600px]">
-          {/* Image - appears first on mobile, left side on desktop */}
-          <div className="relative bg-gradient-to-br from-emerald-900 to-emerald-950 overflow-hidden h-[300px] md:h-auto">
-            <Image src="/HomeImage.png" alt="Mike Degany with robot" fill className="object-cover object-top" />
-            {/* Subtle top gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-br from-black/10 to-transparent" />
-            {/* Transparent triangle effect at bottom - narrow diagonal */}
-            <svg className="absolute bottom-0 left-0 w-full h-20 opacity-60" viewBox="0 0 100 100" preserveAspectRatio="none">
-              <defs>
-                <linearGradient id="triangleGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" style={{ stopColor: 'rgba(0,0,0,0)', stopOpacity: 0 }} />
-                  <stop offset="100%" style={{ stopColor: 'rgba(0,0,0,0.5)', stopOpacity: 1 }} />
-                </linearGradient>
-              </defs>
-              <polygon points="0,40 100,0 100,100 0,100" fill="url(#triangleGradient)" />
-            </svg>
-          </div>
-
-          {/* Content - appears second on mobile, right side on desktop */}
-          <div className="relative isolate flex min-h-[320px] md:min-h-0 md:h-full items-center justify-center overflow-hidden p-8 py-12 md:p-12">
+        <div className="flex flex-col">
+          {/* Content */}
+          <div className="relative isolate flex min-h-[420px] md:min-h-[600px] items-center justify-center overflow-hidden p-8 py-12 md:p-12">
             <video
               className="absolute inset-0 h-full w-full object-cover pointer-events-none"
               autoPlay
