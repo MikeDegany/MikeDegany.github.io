@@ -40,7 +40,10 @@ export function Hero() {
           </div>
 
           {/* Video panel */}
-          <div className="group relative min-h-[200px] md:min-h-0 overflow-hidden">
+          <div
+            className="group relative min-h-[200px] md:min-h-0 overflow-hidden"
+            style={{ clipPath: "polygon(0 0, 100% 0, 100% 78%, 0 100%)" }}
+          >
             <video
               className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
               autoPlay
@@ -54,15 +57,6 @@ export function Hero() {
             </video>
             {/* Cinematic transparent black tint over the whole video */}
             <div className="absolute inset-0 bg-black/50 pointer-events-none" aria-hidden />
-            {/* Solid opaque diagonal cut at the bottom */}
-            <svg
-              className="pointer-events-none absolute bottom-0 left-0 w-full h-24 md:h-32"
-              viewBox="0 0 100 100"
-              preserveAspectRatio="none"
-              aria-hidden
-            >
-              <polygon points="0,100 100,55 100,100" className="fill-white dark:fill-black" />
-            </svg>
           </div>
         </div>
       </div>
