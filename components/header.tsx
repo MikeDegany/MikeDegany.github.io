@@ -3,12 +3,10 @@
 import { useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { Share2, Network, Sparkles } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { DarkModeToggle } from "@/components/dark-mode-toggle"
 
 export function Header() {
   const [activeSection, setActiveSection] = useState("home")
-  const [showCopyNotification, setShowCopyNotification] = useState(false)
 
   const navItems = [
     { name: "HOME", id: "home" },
@@ -19,16 +17,6 @@ export function Header() {
     { name: "INTERESTS", id: "interests" },
     { name: "CONTACT", id: "contact" },
   ]
-
-  const handleShareClick = async () => {
-    try {
-      await navigator.clipboard.writeText("mikedegany.github.io")
-      setShowCopyNotification(true)
-      setTimeout(() => setShowCopyNotification(false), 2000)
-    } catch (err) {
-      console.error("Failed to copy URL:", err)
-    }
-  }
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-background border-b border-gray-200 dark:border-border">
@@ -57,31 +45,8 @@ export function Header() {
             ))}
           </nav>
 
-          <div className="flex items-center gap-4 relative">
-            <Button 
-              variant="default" // Uses filled color instead of ghost to stand out
-              size="icon"       // Keeps it square
-              className="rounded-full w-12 h-12 bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg hover:shadow-emerald-500/50 transition-all hover:scale-110 mr-2"
-              asChild 
-              title="Relax for a moment"
-            >
-              <Link href="/relax">
-                <Sparkles className="h-6 w-6" /> {/* Larger icon size (h-6 w-6 instead of h-4 w-4) */}
-              </Link>
-            </Button>
-            <Button variant="ghost" size="icon" onClick={handleShareClick} title="Share website">
-              <Share2 className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="icon" asChild title="Go to contact">
-              <Link href="/#contact">
-                <Network className="h-4 w-4" />
-              </Link>
-            </Button>
-            {showCopyNotification && (
-              <div className="absolute top-full right-0 mt-2 px-3 py-2 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 text-sm rounded shadow-lg whitespace-nowrap">
-                URL copied to clipboard!
-              </div>
-            )}
+          <div className="flex items-center">
+            <DarkModeToggle />
           </div>
         </div>
       </div>

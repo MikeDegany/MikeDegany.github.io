@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button"
 import { projects } from "@/data/projects-list"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
-import { DarkModeToggle } from "@/components/dark-mode-toggle"
 import { getProjectContent } from "@/data/projects"
 import { RelatedProjects } from "@/components/related-projects"
 
@@ -40,7 +39,6 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
     return (
       <div className="min-h-screen bg-[#fef9e7] dark:bg-background transition-colors">
         <Header />
-        <DarkModeToggle alwaysVisible />
 
         <main className="pt-8 pb-20">
           <div className="container mx-auto px-4">
@@ -73,7 +71,6 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
   return (
     <div className="min-h-screen bg-[#fef9e7] dark:bg-background transition-colors">
       <Header />
-      <DarkModeToggle alwaysVisible />
 
       <main className="pt-8 pb-20">
         <div className="container mx-auto px-4">

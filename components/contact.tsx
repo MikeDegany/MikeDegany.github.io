@@ -1,6 +1,8 @@
 "use client"
 
 import Image from "next/image"
+import Link from "next/link"
+import { Sparkles } from "lucide-react"
 import { EmailLogo3D, LinkedInLogo3D, GitHubLogo3D, XLogo3D } from "./social-logos"
 
 export function Contact() {
@@ -43,6 +45,18 @@ export function Contact() {
             <LinkedInLogo3D />
             <GitHubLogo3D />
             <XLogo3D />
+          </div>
+
+          {/* Relax escape hatch */}
+          <div className="mt-16 flex justify-center">
+            <Link
+              href="/relax"
+              title="Relax for a moment"
+              className="inline-flex items-center gap-2 rounded-full bg-emerald-500 hover:bg-emerald-600 px-5 py-3 text-sm font-semibold text-white shadow-lg hover:shadow-emerald-500/50 transition-all hover:scale-110"
+            >
+              <Sparkles className="h-5 w-5" />
+              Relax for a moment
+            </Link>
           </div>
         </div>
       </div>

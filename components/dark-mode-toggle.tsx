@@ -4,53 +4,37 @@ import { useEffect, useState } from "react"
 import { Moon, Sun } from "lucide-react"
 import { useTheme } from "./theme-provider"
 
-export function DarkModeToggle({ alwaysVisible = false }: { alwaysVisible?: boolean }) {
+export function DarkModeToggle() {
   const { theme, toggleTheme } = useTheme()
-  const [isScrolled, setIsScrolled] = useState(false)
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     setMounted(true)
-    if (!alwaysVisible) {
-      const handleScroll = () => {
-        setIsScrolled(window.scrollY > 100)
-      }
+  }, [])
 
-      window.addEventListener("scroll", handleScroll)
-      // Check initial scroll position
-      handleScroll()
-      return () => window.removeEventListener("scroll", handleScroll)
-    } else {
-      setIsScrolled(true)
-    }
-  }, [alwaysVisible])
-
-  // Don't render until mounted to avoid hydration mismatch
+  // Reserve the slot before hydration so the header doesn't shift when it appears.
   if (!mounted) {
-    return null
+    return <div className="w-9 h-9" aria-hidden />
   }
 
   return (
     <button
       onClick={toggleTheme}
-      className={`fixed top-4 right-4 z-[100] w-10 h-10 md:w-14 md:h-14 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-110 active:scale-95 ${
+      className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 ${
         theme === "dark"
-          ? "bg-yellow-400 hover:bg-yellow-500 text-yellow-900 shadow-yellow-400/50"
-          : "bg-slate-800 hover:bg-slate-900 text-yellow-300 shadow-slate-800/50"
-      } ${alwaysVisible || isScrolled ? "opacity-100 translate-y-0" : "opacity-0 translate-y-[-20px] pointer-events-none"}`}
+          ? "bg-yellow-400 hover:bg-yellow-500 text-yellow-900"
+          : "bg-slate-800 hover:bg-slate-900 text-yellow-300"
+      }`}
       aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+      title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
       style={{
-        boxShadow: theme === "dark" 
-          ? "0 4px 20px rgba(250, 204, 21, 0.4), 0 0 0 1px rgba(250, 204, 21, 0.1)" 
-          : "0 4px 20px rgba(30, 41, 59, 0.4), 0 0 0 1px rgba(148, 163, 184, 0.1)"
+        boxShadow:
+          theme === "dark"
+            ? "0 2px 10px rgba(250, 204, 21, 0.35)"
+            : "0 2px 10px rgba(30, 41, 59, 0.35)",
       }}
     >
-      {theme === "dark" ? (
-        <Sun className="w-4 h-4 md:w-6 md:h-6" />
-      ) : (
-        <Moon className="w-4 h-4 md:w-6 md:h-6" />
-      )}
+      {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
     </button>
   )
 }
-
