@@ -1,5 +1,5 @@
 import { LinkedInLogo3D, GitHubLogo3D } from "@/components/social-logos"
-import { HeroMouseTrail } from "@/components/hero-mouse-trail"
+import { HeroPoseGraph } from "@/components/hero-pose-graph"
 
 export function Hero() {
   return (
@@ -8,7 +8,7 @@ export function Hero() {
         <div className="flex flex-col md:grid md:grid-cols-2 md:min-h-[360px]">
           {/* Text panel */}
           <div className="relative isolate overflow-hidden flex flex-col items-center justify-center text-center bg-gradient-to-br from-[#050d1c] via-[#0a1830] to-[#0f2744] p-8 py-12 md:p-12 space-y-4 md:space-y-6 text-white">
-            <HeroMouseTrail />
+            <HeroPoseGraph />
             {/* Decorative glow accents */}
             <div className="pointer-events-none absolute -top-24 -left-24 w-64 h-64 rounded-full bg-blue-500/20 blur-3xl" aria-hidden />
             <div className="pointer-events-none absolute -bottom-24 -right-16 w-72 h-72 rounded-full bg-cyan-400/10 blur-3xl" aria-hidden />
