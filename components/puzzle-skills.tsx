@@ -11,9 +11,9 @@ const skills = [
     labelX: 95,
     labelY: 110
   },
-  { // SLAM
-    id: 2, 
-    name: "SLAM", 
+  { // Machine Learning
+    id: 2,
+    name: "Machine Learning",
     color: "#E5A84B", 
     path: "M 150,150 L 150,27 Q 250,-20 350,27 L 350,150 L 150,150 Z",
     labelX: 250,
@@ -68,9 +68,9 @@ const skills = [
     labelX: 145,
     labelY: 345
   },
-  { // Machine Learning
-    id: 13, 
-    name: "Machine Learning", 
+  { // SLAM
+    id: 13,
+    name: "SLAM",
     color: "#F97316", 
     path: "M 240,290 L 320,290 L 320,400 L 240,400 L 240,290 Z",
     labelX: 300,
