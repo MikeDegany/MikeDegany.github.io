@@ -14,7 +14,7 @@ const skills = [
   { // Machine Learning
     id: 2,
     name: "Machine Learning",
-    color: "#E5A84B", 
+    color: "#F59E0B", 
     path: "M 150,150 L 150,27 Q 250,-20 350,27 L 350,150 L 150,150 Z",
     labelX: 250,
     labelY: 80
@@ -79,7 +79,7 @@ const skills = [
   { // Python
     id: 8, 
     name: "Python", 
-    color: "#F59E0B", 
+    color: "#E5A84B", 
     path: "M 360,290 L 489,290 L 459,305 L 449,329 L 453,347 Q 458,355 444,360 L 455,369 L 443,380 L 440,400 L 330,400 L 330,290 Z",
     labelX: 415,
     labelY: 345
