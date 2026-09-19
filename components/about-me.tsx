@@ -2,29 +2,11 @@
 
 import Image from "next/image"
 import { useEffect, useRef, useState } from "react"
+import { aboutBeats, type AboutBeat } from "@/data/about"
 
 // 1. Define constants OUTSIDE to prevent dependency issues
 const PARAGRAPH_HEIGHT_MOBILE = 280
 const PARAGRAPH_HEIGHT_DESKTOP = 300
-
-type AboutBeat =
-  | { title: string; description: string }
-  | { title: string; descriptionLines: [string, string] }
-
-const aboutBeats: AboutBeat[] = [
-  {
-    title: "Autonomous Systems \n Engineer",
-    descriptionLines: [
-      "PhD Candidate",
-      "Vehicle Autonomy and Intelligence Lab @ UNT",
-    ],
-  },
-  { title: "Full-Stack Autonomy", description: "From perception to drive-by-wire." },
-  // { title: "Bridge-Builder", description: "Translating complex theory into real-world application." },
-  // { title: "Systems Architect", description: "Designing robust, scalable autonomous solutions." },
-  { title: "Spatial Intelligence", description: "Advancing the frontier of 3D Spatial Perception." },
-  // { title: "Research Leader", description: "Driving innovation through cross-functional collaboration." },
-]
 
 function BeatDescription({ beat }: { beat: AboutBeat }) {
   const baseClass =

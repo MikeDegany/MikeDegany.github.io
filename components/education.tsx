@@ -1,52 +1,13 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
+import { EDUCATION_ITEMS } from "@/data/education"
+import { getPointOnBezier, getAngleOnBezier, splitBezier } from "@/lib/bezier"
 
 // --- Configuration ---
 const SVG_WIDTH = 1200
 const SVG_HEIGHT = 500
 const ROAD_WIDTH = 80
-
-const EDUCATION_ITEMS = [
-  {
-    degree: "Bachelor of Science: Electronics Engineering",
-    institution: "Yazd University (2012 - 2016)",
-    pathT: 0.15,
-    align: "left", // New: anchor bubble to the left
-  },
-  {
-    degree: "Master of Science: Mechatronics Engineering",
-    institution: "Amirkabir University of Technology (AUT) (2016 - 2019) - Distinguished Graduate Award (Ranked 3rd of Class)",
-    pathT: 0.5,
-    align: "center", // Anchor center
-  },
-  {
-    degree: "Doctor of Philosophy: Computer Science and Engineering",
-    institution: "University of North Texas (UNT) Texas, USA (2022 - 2026)",
-    pathT: 0.85,
-    align: "right", // New: anchor bubble to the right
-  },
-]
-
-// --- Math Helpers ---
-function getPointOnBezier(t: number, p0: {x:number, y:number}, p1: {x:number, y:number}, p2: {x:number, y:number}) {
-  const x = (1 - t) * (1 - t) * p0.x + 2 * (1 - t) * t * p1.x + t * t * p2.x
-  const y = (1 - t) * (1 - t) * p0.y + 2 * (1 - t) * t * p1.y + t * t * p2.y
-  return { x, y }
-}
-
-function getAngleOnBezier(t: number, p0: {x:number, y:number}, p1: {x:number, y:number}, p2: {x:number, y:number}) {
-  const dx = 2 * (1 - t) * (p1.x - p0.x) + 2 * t * (p2.x - p1.x)
-  const dy = 2 * (1 - t) * (p1.y - p0.y) + 2 * t * (p2.y - p1.y)
-  return Math.atan2(dy, dx) * (180 / Math.PI)
-}
-
-function splitBezier(t: number, p0: {x:number, y:number}, p1: {x:number, y:number}, p2: {x:number, y:number}) {
-  const mid1 = { x: p0.x + t * (p1.x - p0.x), y: p0.y + t * (p1.y - p0.y) }
-  const mid2 = { x: p1.x + t * (p2.x - p1.x), y: p1.y + t * (p2.y - p1.y) }
-  const splitPoint = { x: mid1.x + t * (mid2.x - mid1.x), y: mid1.y + t * (mid2.y - mid1.y) }
-  return { mid1, mid2, splitPoint }
-}
 
 export function Education() {
   const [scrollProgress, setScrollProgress] = useState(0)

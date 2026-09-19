@@ -2,7 +2,7 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { Sparkles } from "lucide-react"
+import { Bot, Sparkles } from "lucide-react"
 import { EmailLogo3D, LinkedInLogo3D, GitHubLogo3D, XLogo3D } from "./social-logos"
 
 export function Contact() {
@@ -47,8 +47,16 @@ export function Contact() {
             <XLogo3D />
           </div>
 
-          {/* Relax escape hatch */}
-          <div className="mt-16 flex justify-center">
+          {/* Explore game + relax escape hatch */}
+          <div className="mt-16 flex flex-wrap items-center justify-center gap-4">
+            <Link
+              href="/explore"
+              title="Explore the site as a robot"
+              className="inline-flex items-center gap-2 rounded-full bg-blue-600 hover:bg-blue-700 px-5 py-3 text-sm font-semibold text-white shadow-lg hover:shadow-blue-500/50 transition-all hover:scale-110"
+            >
+              <Bot className="h-5 w-5" />
+              Explore as a robot
+            </Link>
             <Link
               href="/relax"
               title="Relax for a moment"

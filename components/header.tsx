@@ -16,6 +16,7 @@ export function Header() {
     { name: "EDUCATION", id: "education" },
     { name: "INTERESTS", id: "interests" },
     { name: "CONTACT", id: "contact" },
+    { name: "EXPLORE", id: "explore", href: "/explore" },
   ]
 
   return (
@@ -32,7 +33,7 @@ export function Header() {
             {navItems.map((item) => (
               <Link
                 key={item.id}
-                href={`/#${item.id}`}
+                href={item.href ?? `/#${item.id}`}
                 className={`text-sm font-medium transition-colors hover:text-blue-600 dark:hover:text-blue-400 ${
                   activeSection === item.id
                     ? "text-blue-600 dark:text-blue-400"

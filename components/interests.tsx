@@ -1,22 +1,5 @@
 import Image from "next/image"
-
-const interests = [
-  {
-    title: "Robotics",
-    description: "Design, simulate, build robotic systems",
-    image: "/robotmike.jpg",
-  },
-  {
-    title: "Connected Autonomous Vehicles",
-    description: "Perception, Planning and Control for self-driving cars",
-    image: "/CAV.png",
-  },
-  {
-    title: "Electronics",
-    description: "Electronic circuits, Embedded systems, SCBs, etc.",
-    image: "/electronics.png",
-  },
-]
+import { interests } from "@/data/interests"
 
 export function Interests() {
   return (
