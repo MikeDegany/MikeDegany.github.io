@@ -204,14 +204,14 @@ export function ExploreGame() {
 
       {isTouch && (
         <>
-          <div className="absolute bottom-6 left-5 z-30" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
+          <div className="absolute bottom-6 right-5 z-30" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
             <Joystick onChange={onJoy} />
           </div>
           <button
             type="button"
             onClick={() => gameRef.current?.interact()}
             disabled={!activeBeacon?.href}
-            className="absolute bottom-8 right-6 z-30 flex h-16 w-16 items-center justify-center rounded-full text-sm font-bold text-slate-950 shadow-xl ring-2 ring-white/20 transition disabled:opacity-35 active:scale-95"
+            className="absolute bottom-8 left-6 z-30 flex h-16 w-16 items-center justify-center rounded-full text-sm font-bold text-slate-950 shadow-xl ring-2 ring-white/20 transition disabled:opacity-35 active:scale-95"
             style={{ backgroundColor: activeBeacon?.color ?? "#fbbf24", marginBottom: "env(safe-area-inset-bottom)" }}
             aria-label="Enter"
           >

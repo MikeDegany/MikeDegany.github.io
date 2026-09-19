@@ -225,9 +225,20 @@ export class Game {
     if (k.has("ArrowLeft") || k.has("KeyA")) st -= 1
     if (k.has("ArrowRight") || k.has("KeyD")) st += 1
     if (this.joy.active) {
-      // joystick: y up = forward, x right = steer right
-      th += -this.joy.y
-      st += this.joy.x
+      if (this.drive.turnsInPlace) {
+        // Point-and-go: steer toward the screen direction the stick is pushed, not the robot's own heading.
+        const mag = clamp(Math.hypot(this.joy.x, this.joy.y), 0, 1)
+        if (mag > 0) {
+          const alpha = wrapAngle(Math.atan2(this.joy.y, this.joy.x) - this.pose.theta)
+          const absA = Math.abs(alpha)
+          st = clamp(alpha * 2.4, -1, 1)
+          th = absA > 1.25 ? 0 : clamp((1 - absA * 0.9) * mag, 0, 1)
+        }
+      } else {
+        // Car: joystick stays relative to the robot's own heading, like a steering wheel + pedal.
+        th += -this.joy.y
+        st += this.joy.x
+      }
     }
     // Reversing with the stick/keys steers like a car: swap so "left" still moves the nose left.
     out.throttle = clamp(th, -1, 1)

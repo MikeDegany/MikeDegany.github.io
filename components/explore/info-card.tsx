@@ -19,26 +19,26 @@ export function InfoCard({
 }) {
   const found = new Set(skillsFound)
   return (
-    <div className="pointer-events-none absolute inset-x-0 top-14 z-30 flex justify-center px-3 sm:justify-end sm:px-4">
+    <div className="pointer-events-none absolute inset-x-0 top-14 bottom-28 z-30 flex items-start justify-center px-3 sm:bottom-auto sm:justify-end sm:px-4">
       <div
         key={beacon.id}
-        className="pointer-events-auto w-full max-w-sm overflow-hidden rounded-2xl bg-slate-950/85 ring-1 shadow-2xl backdrop-blur-md animate-in fade-in slide-in-from-top-2 duration-200"
+        className="pointer-events-auto flex w-full max-w-sm max-h-[min(70vh,32rem)] flex-col overflow-y-auto rounded-2xl bg-slate-950/85 ring-1 shadow-2xl backdrop-blur-md animate-in fade-in slide-in-from-top-2 duration-200"
         style={{ boxShadow: `0 0 0 1px ${beacon.color}55, 0 20px 50px rgba(0,0,0,0.5)` }}
       >
         {beacon.image && beacon.kind !== "about" && (
-          <div className="relative h-28 w-full overflow-hidden bg-slate-900">
+          <div className="relative h-20 w-full shrink-0 overflow-hidden bg-slate-900 sm:h-28">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={beacon.image} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 to-transparent" />
           </div>
         )}
-        <div className="p-4">
+        <div className="p-3 sm:p-4">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <div className="text-[10px] font-semibold uppercase tracking-[0.2em]" style={{ color: beacon.color }}>
                 {beacon.kind === "nav" ? "waypoint" : beacon.kind}
               </div>
-              <h3 className="mt-0.5 text-base font-bold leading-tight text-white">{beacon.title}</h3>
+              <h3 className="mt-0.5 text-sm font-bold leading-tight text-white sm:text-base">{beacon.title}</h3>
               {beacon.subtitle && <p className="mt-0.5 truncate text-xs text-slate-400">{beacon.subtitle}</p>}
             </div>
             <button
