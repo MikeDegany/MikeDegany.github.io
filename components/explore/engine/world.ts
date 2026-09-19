@@ -244,8 +244,6 @@ export function buildWorld(): World {
       room: i,
       title: "Skills yard",
       subtitle: "Objects identified by the lidar",
-      href: "/#skills",
-      actionLabel: "See the skills puzzle",
       color: KIND_COLOR.skills,
     })
   }
@@ -395,8 +393,6 @@ export function buildWorld(): World {
         title: `${short[degree] ?? degree} ${field}`,
         subtitle: years ? `${years[1]} – ${years[2]}` : undefined,
         lines: award ? [where, award] : [where],
-        href: "/#education",
-        actionLabel: "See the education road",
         color: poiColor,
       })
     })

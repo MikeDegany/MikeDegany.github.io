@@ -25,7 +25,7 @@ export function InfoCard({
         className="pointer-events-auto flex w-full max-w-sm max-h-[min(70vh,32rem)] flex-col overflow-y-auto rounded-2xl bg-slate-950/85 ring-1 shadow-2xl backdrop-blur-md animate-in fade-in slide-in-from-top-2 duration-200"
         style={{ boxShadow: `0 0 0 1px ${beacon.color}55, 0 20px 50px rgba(0,0,0,0.5)` }}
       >
-        {beacon.image && beacon.kind !== "about" && (
+        {beacon.image && (
           <div className="relative h-20 w-full shrink-0 overflow-hidden bg-slate-900 sm:h-28">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={beacon.image} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover" />
@@ -39,7 +39,6 @@ export function InfoCard({
                 {beacon.kind === "nav" ? "waypoint" : beacon.kind}
               </div>
               <h3 className="mt-0.5 text-sm font-bold leading-tight text-white sm:text-base">{beacon.title}</h3>
-              {beacon.subtitle && <p className="mt-0.5 truncate text-xs text-slate-400">{beacon.subtitle}</p>}
             </div>
             <button
               type="button"
@@ -50,22 +49,6 @@ export function InfoCard({
               <X className="h-4 w-4" />
             </button>
           </div>
-
-          {beacon.kind === "about" && beacon.image && (
-            <div className="mt-3 flex items-start gap-3">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={beacon.image} alt="" loading="lazy" decoding="async" className="h-16 w-16 shrink-0 rounded-xl object-cover ring-1 ring-white/10" />
-              <ul className="space-y-1 text-xs text-slate-300">
-                {beacon.lines?.map((l) => (
-                  <li key={l}>{l}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {beacon.kind !== "about" && beacon.lines && beacon.lines.length > 0 && (
-            <p className="mt-2 text-sm leading-snug text-slate-300">{beacon.lines.join(" ")}</p>
-          )}
 
           {beacon.kind === "skills" && (
             <div className="mt-3">
