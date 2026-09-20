@@ -15,7 +15,7 @@ const LIDAR_HZ = 30
 const PHYSICS_DT = 1 / 120
 const IDLE_BEFORE_DEMO = 18
 const IDLE_BEFORE_FIRST_DEMO = 10
-const DEMO_DWELL = 4
+const DEMO_DWELL = 7
 const MIN_SCALE = 0.55
 const MAX_SCALE = 1.3
 
