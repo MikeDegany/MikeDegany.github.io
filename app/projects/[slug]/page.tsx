@@ -92,8 +92,27 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
             </p>
           </header>
 
+          {/* Featured Video from content - replaces the featured image when present */}
+          {projectContent?.featuredVideo && (
+            <div className="mb-16 max-w-3xl mx-auto">
+              <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-gray-900 shadow-xl">
+                <video
+                  className="absolute inset-0 w-full h-full"
+                  src={projectContent.featuredVideo}
+                  poster={projectContent.images?.[0] || project.image}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  controls
+                  preload="metadata"
+                />
+              </div>
+            </div>
+          )}
+
           {/* Featured Image from project or content - Same width as body */}
-          {(projectContent?.images?.[0] || project.image) && (
+          {!projectContent?.featuredVideo && (projectContent?.images?.[0] || project.image) && (
             <div className="mb-16 max-w-3xl mx-auto">
               <div className="relative w-full rounded-2xl overflow-hidden bg-gray-100 dark:bg-gray-800 shadow-xl">
                 <Image
@@ -164,6 +183,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
                         src={video.url}
                         title={video.title || displayTitle}
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        referrerPolicy="strict-origin-when-cross-origin"
                         allowFullScreen
                       />
                     </div>
@@ -182,6 +202,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
                   src={project.youtubeVideo}
                   title={displayTitle}
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  referrerPolicy="strict-origin-when-cross-origin"
                   allowFullScreen
                 />
               </div>

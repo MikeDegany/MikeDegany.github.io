@@ -10,6 +10,14 @@ export interface Project {
 
 export const projects: Project[] = [
   {
+    slug: "vit-xray",
+    title: "vit-xray: Look Inside Any Vision Transformer in One Command",
+    briefTitle: "vit-xray: X-Raying Vision Transformers",
+    description: "An open-source tool that exposes the hidden artifact tokens vision transformers quietly hijack as scratch space",
+    thumbnail: "/vitxray-registers-thumb.webp",
+    image: "/vitxray-hero.webp",
+  },
+  {
     slug: "federated-gaussian-splatting-slam",
     title: "F3DGS: Federated 3D Gaussian Splatting for Decentralized Multi-AgentWorld Modeling",
     briefTitle: "[CVPR 2026] Teaching Robots to Build 3D Worlds Together",

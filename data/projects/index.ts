@@ -7,6 +7,7 @@ import { content as motionPlanning } from "./motion-planning-dynamic-environment
 import { content as multiModalOdometry } from "./multi-modal-odometry-system"
 import { content as roboticManipulator } from "./robotic-manipulator-path-execution"
 import { content as federated3D } from "./federated-gaussian-splatting-slam"
+import { content as vitXray } from "./vit-xray"
 
 // Map project slugs to their content
 export const projectContents: Record<string, ProjectContent> = {
@@ -16,6 +17,7 @@ export const projectContents: Record<string, ProjectContent> = {
   "multi-sensor-fusion-odometry": multiModalOdometry,
   "robotic-manipulator-path-execution": roboticManipulator,
   "federated-gaussian-splatting-slam": federated3D,
+  "vit-xray": vitXray,
 }
 
 // Helper function to get project content by slug
