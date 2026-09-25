@@ -42,6 +42,25 @@ export const KIND_COLOR = {
   nav: "#e2e8f0",
 } as const
 
+/**
+ * Skill crates per row, top → bottom: alternating 3 and 2 so the rows interleave into a
+ * staggered slalom (see SKILLS in buildWorld). Shared with ROOM_SPECS so the room's height
+ * always matches the row count.
+ */
+const SKILL_ROWS: number[] = (() => {
+  const rows: number[] = []
+  for (let left = skills.length, k = 0; left > 0; k++) {
+    const n = Math.min(left, k % 2 === 0 ? 3 : 2)
+    rows.push(n)
+    left -= n
+  }
+  return rows
+})()
+const SKILL_ROW_H = 190
+// Deep enough that a drivable corridor runs above the top row to the exit door, whichever
+// crate ends up beneath it.
+const SKILL_TOP_PAD = 175
+
 /** Rooms listed top → bottom. `door.x` is the left edge of the doorway in the wall ABOVE the room. */
 type RoomSpec = { name: string; height: number; door: { x: number } | null; floor: string }
 // Room heights below are computed from the underlying data arrays' length rather than hardcoded,
@@ -51,7 +70,7 @@ type RoomSpec = { name: string; height: number; door: { x: number } | null; floo
 const ROOM_SPECS: RoomSpec[] = [
   { name: "CONTACT", height: 900, door: null, floor: "#1a3260" },
   { name: "EDUCATION", height: 100 + (Math.max(EDUCATION_ITEMS.length, 2) - 1) * 450, door: { x: 400 }, floor: "#17335f" },
-  { name: "TECHNICAL SKILLS", height: 340 + (Math.ceil(skills.length / 3) - 1) * 190, door: { x: 700 }, floor: "#1d2e58" },
+  { name: "TECHNICAL SKILLS", height: SKILL_TOP_PAD + 245 + (SKILL_ROWS.length - 1) * SKILL_ROW_H, door: { x: 700 }, floor: "#1d2e58" },
   { name: "PROJECTS", height: 660 + (Math.ceil(projects.length / 2) - 1) * 420, door: { x: 400 }, floor: "#183462" },
   { name: "ABOUT ME", height: 820, door: { x: 130 }, floor: "#1a305d" },
   { name: "HOME", height: 820, door: { x: 640 }, floor: "#1b3866" },
@@ -186,8 +205,11 @@ export function buildWorld(): World {
     for (const { p, idx } of ordered) {
       const left = idx % 2 === 0
       const row = Math.floor(idx / 2)
+      // With an odd count the last project would sit alone on the left with half the row empty;
+      // centre it instead so it greets you as you enter.
+      const alone = idx === projects.length - 1 && idx % 2 === 0
       const py = r.y0 + 170 + row * rowGap
-      const pedX = left ? 60 : WORLD_W - 60 - 210
+      const pedX = alone ? (WORLD_W - 210) / 2 : left ? 60 : WORLD_W - 60 - 210
       decor.push({ kind: "spotlight", x: pedX + 105, y: py + 65, r: 190, color: "rgba(245,158,11,0.10)" })
       addObstacle(i, pedX, py, 210, 130, { kind: "rect", x: pedX, y: py, w: 210, h: 130, fill: "#0f172a", stroke: PALETTE.wall, radius: 6 })
       decor.push({ kind: "image", src: p.thumbnail, x: pedX + 8, y: py + 8, w: 194, h: 114, radius: 4 })
@@ -211,63 +233,60 @@ export function buildWorld(): World {
     }
   }
 
-  // ─── SKILLS (scattered, slightly askew containers) ──────────────────────────
+  // ─── SKILLS (staggered slalom of slightly askew containers) ─────────────────
   {
     const r = R["TECHNICAL SKILLS"]
     const i = r.index
     const TH = 56
     // Wide enough for the longest names (no canvas here, so estimate from character count)
     const widthFor = (name: string) => Math.max(150, Math.round(name.length * 18 * 0.62 + 36))
-    // Irregular placement + small rotations so no two hallways look alike and neighbours peek
-    // into view as you pass, packed procedurally (row by row, centered, deterministic jitter) so
-    // it scales to any skill count instead of a hand-placed coordinate per skill. Gaps stay ≥ 130
-    // so the planner (robot-radius inflated) can thread them; the row nearest each doorway dodges
-    // that door's band (read from ROOM_SPECS, not hardcoded) so the entry/exit lanes stay clear.
-    const perRow = 3
-    const rowHeight = 190
-    const topPad = 95
-    const GAP = 50
-    const DOOR_MARGIN = 40
+    // Rows alternate 3 and 2 crates (SKILL_ROWS). A 3-row puts its outer crates right against the
+    // side walls (WALL_GAP is narrower than the robot) plus one in the centre, so there's no lane
+    // along a wall; the 2-rows sit over the 3-rows' gaps. The only way through weaves down the
+    // middle, passing within lidar range of every crate instead of skirting one end of each row.
+    // Every open gap stays ≥ 140 so the planner (robot-radius inflated) can thread it, and
+    // SKILL_TOP_PAD leaves a corridor above the top row to the exit door.
+    const WALL_GAP = 30
     let seed = 1337
     const rand = () => { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff }
-    const rows = Math.ceil(skills.length / perRow)
-    const exitDoor = ROOM_SPECS[i].door // this room's own door — the lane out, near the top row
-    const entryDoor = ROOM_SPECS[i + 1]?.door // the room after it in the array — the lane in, near the bottom row
+    const rowY = (row: number) => r.y0 + SKILL_TOP_PAD + row * SKILL_ROW_H
 
-    for (let row = 0; row < rows; row++) {
-      const rowSkills = skills.slice(row * perRow, row * perRow + perRow)
+    let next = 0
+    SKILL_ROWS.forEach((n, row) => {
+      const rowSkills = skills.slice(next, next + n)
+      next += n
       const widths = rowSkills.map((s) => widthFor(s.name))
-      const totalW = widths.reduce((a, b) => a + b, 0) + GAP * (rowSkills.length - 1)
+      const centers =
+        n === 3
+          ? [WALL_GAP + widths[0] / 2, WORLD_W / 2, WORLD_W - WALL_GAP - widths[2] / 2]
+          : n === 2
+            ? [WORLD_W * 0.3, WORLD_W * 0.7]
+            : [WORLD_W / 2]
 
-      let lo = 40, hi = WORLD_W - 40
-      const nearDoor = row === 0 ? exitDoor : row === rows - 1 ? entryDoor : null
-      if (nearDoor) {
-        const bandLo = nearDoor.x - DOOR_MARGIN
-        const bandHi = nearDoor.x + DOOR_W + DOOR_MARGIN
-        // Push the row to whichever side of the door band leaves more room.
-        if (bandLo - lo >= hi - bandHi) hi = bandLo
-        else lo = bandHi
-      }
-      let cx = Math.max(lo, Math.min(hi - totalW, (lo + hi - totalW) / 2))
-
-      rowSkills.forEach((sk) => {
-        const TW = widthFor(sk.name)
-        const centerX = cx + TW / 2
-        const y = r.y0 + topPad + row * rowHeight + (rand() - 0.5) * 36
-        const ang = (rand() - 0.5) * 0.32
+      rowSkills.forEach((sk, k) => {
+        const TW = widths[k]
+        const centerX = centers[k]
+        const y = rowY(row) + (rand() - 0.5) * 36
+        const ang = (rand() - 0.5) * 0.24
         const crate: Crate = { skillId: sk.id, name: sk.name, color: sk.color, x: centerX - TW / 2, y: y - TH / 2, w: TW, h: TH }
         const idx = crates.push(crate) - 1
         segments.push(...rotRectSegments(centerX, y, TW, TH, ang, i, idx))
         decor.push({ kind: "rect", x: centerX - TW / 2, y: y - TH / 2, w: TW, h: TH, fill: sk.color, stroke: "rgba(255,255,255,0.55)", radius: 8, angle: ang })
         decor.push({ kind: "text", text: sk.name, x: centerX, y: y + 1, size: 18, color: "#0b1120", weight: 800, align: "center", maxWidth: TW - 14, maxLines: 1, angle: ang, ghost: true, ghostColor: sk.color })
-        cx += TW + GAP
       })
-    }
+    })
+
+    // The beacon needs open floor: the centre of a 2-row is its wide middle gap. Use the 2-row
+    // nearest the room's middle (ties → nearer the entrance); fall back to below the last row.
+    const mid = (SKILL_ROWS.length - 1) / 2
+    const beaconRow = SKILL_ROWS.map((n, row) => ({ n, row }))
+      .filter((c) => c.n === 2)
+      .sort((a, b) => Math.abs(a.row - mid) - Math.abs(b.row - mid) || b.row - a.row)[0]?.row
     beacons.push({
       id: "skills",
       kind: "skills",
-      x: 500,
-      y: r.y0 + topPad + ((rows - 1) * rowHeight) / 2,
+      x: WORLD_W / 2,
+      y: beaconRow !== undefined ? rowY(beaconRow) : rowY(SKILL_ROWS.length - 1) + 130,
       radius: 110,
       order: order++,
       room: i,
