@@ -22,9 +22,36 @@ export const skills: Skill[] = [
     id: 2,
     name: "Machine Learning",
     color: "#F59E0B",
-    path: "M 150,150 L 150,27 Q 250,-20 350,27 L 350,150 L 150,150 Z",
+    // Two cuts: a bottom-left rectangle (ViT) and a wide band along the right edge
+    // (Reinforcement Learning) that takes over the right portion of the dome itself — the
+    // original dome curve (Q 250,-20 350,27) is split via De Casteljau subdivision at t=0.72, so
+    // Machine Learning's own curve is the exact left part of that same curve, not a flat cut.
+    path: "M 150,85 L 150,27 Q 222,-7 294,8 L 294,150 L 230,150 L 230,85 Z",
     labelX: 250,
     labelY: 80,
+  },
+  { // Reinforcement Learning — takes over the right portion of Machine Learning's dome: its own
+    // curve (Q 328,17 350,27) is the right part of the same split quadratic Bézier (split at
+    // t≈0.75, ~10-12 units further along than Machine Learning's own cut, for the gap), so the
+    // two curves read as one continuous dome silhouette divided between the pieces, the same way
+    // the rest of the puzzle's gaps work, just along a curve instead of a straight edge. Flush on
+    // the real outer edges (right x=350, bottom y=150) below that.
+    id: 14,
+    name: "Reinforcement Learning",
+    color: "#D97706",
+    path: "M 306,11 Q 328,17 350,27 L 350,150 L 306,150 L 306,11 Z",
+    labelX: 330,
+    labelY: 100,
+  },
+  { // ViT — the bottom-left rectangle of Machine Learning, same fit convention (flush on the
+    // real outer edges — left x=150, bottom y=150 — inset ~9 units on the two new interior-cut
+    // edges).
+    id: 15,
+    name: "ViT",
+    color: "#B45309",
+    path: "M 150,94 L 221,94 L 221,150 L 150,150 L 150,94 Z",
+    labelX: 186,
+    labelY: 122,
   },
   { // ROS2
     id: 3,

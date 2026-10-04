@@ -200,14 +200,19 @@ export function buildWorld(): World {
     const r = R.PROJECTS
     const i = r.index
     const rowGap = 420
-    // Visit order: bottom row first (nearest the entrance), left then right
-    const ordered = projects.map((p, idx) => ({ p, idx })).sort((a, b) => Math.floor(b.idx / 2) - Math.floor(a.idx / 2) || a.idx - b.idx)
-    for (const { p, idx } of ordered) {
-      const left = idx % 2 === 0
-      const row = Math.floor(idx / 2)
+    // Visit order: bottom row first (nearest the entrance), left then right. Rows are assigned
+    // by each project's position counting from the END of the data array (ridx), not the start,
+    // so the oldest/first-listed project sits nearest the entrance and greets you first, while
+    // the newest project (typically appended last) ends up furthest in, encountered last.
+    const ordered = projects
+      .map((p, idx) => ({ p, ridx: projects.length - 1 - idx }))
+      .sort((a, b) => Math.floor(b.ridx / 2) - Math.floor(a.ridx / 2) || a.ridx - b.ridx)
+    for (const { p, ridx } of ordered) {
+      const left = ridx % 2 === 0
+      const row = Math.floor(ridx / 2)
       // With an odd count the last project would sit alone on the left with half the row empty;
       // centre it instead so it greets you as you enter.
-      const alone = idx === projects.length - 1 && idx % 2 === 0
+      const alone = ridx === projects.length - 1 && ridx % 2 === 0
       const py = r.y0 + 170 + row * rowGap
       const pedX = alone ? (WORLD_W - 210) / 2 : left ? 60 : WORLD_W - 60 - 210
       decor.push({ kind: "spotlight", x: pedX + 105, y: py + 65, r: 190, color: "rgba(245,158,11,0.10)" })
