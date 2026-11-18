@@ -231,7 +231,7 @@ export function buildWorld(): World {
         subtitle: p.title,
         lines: [p.description],
         image: p.thumbnail,
-        href: `/projects/${p.slug}`,
+        href: p.externalUrl ?? `/projects/${p.slug}`,
         actionLabel: "Open project",
         color: KIND_COLOR.project,
       })

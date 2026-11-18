@@ -11,7 +11,7 @@ import { RelatedProjects } from "@/components/related-projects"
 
 // Generate static params for all projects
 export async function generateStaticParams() {
-  return projects.map((project) => ({
+  return projects.filter((project) => !project.externalUrl).map((project) => ({
     slug: project.slug,
   }))
 }
@@ -19,7 +19,7 @@ export async function generateStaticParams() {
 export default async function ProjectPage({ params }: { params: Promise<{ slug: string }> }) {
   // In Next.js 16, params is a Promise
   const { slug } = await params
-  const project = projects.find((p) => p.slug === slug)
+  const project = projects.find((p) => p.slug === slug && !p.externalUrl)
 
   if (!project) {
     notFound()

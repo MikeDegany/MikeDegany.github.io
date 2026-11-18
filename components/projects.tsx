@@ -75,7 +75,8 @@ export function Projects() {
               {projects.map((project) => (
                 <Link
                   key={project.slug}
-                  href={`/projects/${project.slug}`}
+                  href={project.externalUrl ?? `/projects/${project.slug}`}
+                  {...(project.externalUrl ? { target: "_blank", rel: "noopener noreferrer" } : {})}
                   className="flex-[0_0_85%] md:flex-[0_0_45%] lg:flex-[0_0_35%] min-w-0 cursor-pointer group select-none"
                   aria-label={`View ${project.briefTitle}`}
                 >
