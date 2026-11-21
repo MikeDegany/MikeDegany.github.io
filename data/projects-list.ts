@@ -77,13 +77,5 @@ export const projects: Project[] = [
     thumbnail: "/JackalonGrass.jpg",
     image: "/JackalonGrass.jpg",
   },
-  {
-    slug: "robotic-manipulator-path-execution",
-    title: "Path Execution on Robotic Manipulator",
-    briefTitle: "Robotic Manipulator Path Execution",
-    description: "Simulated Kinovarobotics manipulator in Gazebo and Controlled in ROS",
-    thumbnail: "/kinova-thumb.webp",
-    image: "/kinova.webp",
-  },
 ]
 

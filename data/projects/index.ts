@@ -5,7 +5,6 @@ import { content as multiRobotMapping } from "./multi-robot-mapping-navigation"
 import { content as motionControl } from "./motion-control-autonomous-vehicle"
 import { content as motionPlanning } from "./motion-planning-dynamic-environments"
 import { content as multiModalOdometry } from "./multi-modal-odometry-system"
-import { content as roboticManipulator } from "./robotic-manipulator-path-execution"
 import { content as federated3D } from "./federated-gaussian-splatting-slam"
 import { content as vitXray } from "./vit-xray"
 
@@ -15,7 +14,6 @@ export const projectContents: Record<string, ProjectContent> = {
   "motion-control-autonomous-vehicle": motionControl,
   "motion-planning-dynamic-environments": motionPlanning,
   "multi-sensor-fusion-odometry": multiModalOdometry,
-  "robotic-manipulator-path-execution": roboticManipulator,
   "federated-gaussian-splatting-slam": federated3D,
   "vit-xray": vitXray,
 }
